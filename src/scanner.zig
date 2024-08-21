@@ -78,6 +78,8 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8) !std.ArrayLis
         const token: ?Token = switch (content[i]) {
             '(' => Token{ .type = .LEFT_PAREN, .start = i, .length = 1 },
             ')' => Token{ .type = .RIGHT_PAREN, .start = i, .length = 1 },
+            '{' => Token{ .type = .LEFT_BRACE, .start = i, .length = 1 },
+            '}' => Token{ .type = .RIGHT_BRACE, .start = i, .length = 1 },
             else => null,
         };
 

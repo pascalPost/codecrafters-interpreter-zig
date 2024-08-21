@@ -25,3 +25,16 @@ test "Parentheses" {
     try expect(eql(tokens.items[2], Token{ .type = .RIGHT_PAREN, .start = 2, .length = 1 }));
     try expect(eql(tokens.items[3], Token{ .type = .EOF, .start = 3, .length = 0 }));
 }
+
+test "Braces" {
+    const content = "{{}}";
+    var tokens = try tokenize(std.testing.allocator, content[0..]);
+    defer tokens.deinit();
+
+    try expect(tokens.items.len == 5);
+    try expect(eql(tokens.items[0], Token{ .type = .LEFT_BRACE, .start = 0, .length = 1 }));
+    try expect(eql(tokens.items[1], Token{ .type = .LEFT_BRACE, .start = 1, .length = 1 }));
+    try expect(eql(tokens.items[2], Token{ .type = .RIGHT_BRACE, .start = 2, .length = 1 }));
+    try expect(eql(tokens.items[3], Token{ .type = .RIGHT_BRACE, .start = 3, .length = 1 }));
+    try expect(eql(tokens.items[4], Token{ .type = .EOF, .start = 4, .length = 0 }));
+}
