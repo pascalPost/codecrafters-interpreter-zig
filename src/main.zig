@@ -1,4 +1,5 @@
 const std = @import("std");
+const scanner = @import("scanner.zig");
 
 pub fn main() !void {
     const args = try std.process.argsAlloc(std.heap.page_allocator);
@@ -20,9 +21,15 @@ pub fn main() !void {
     const file_contents = try std.fs.cwd().readFileAlloc(std.heap.page_allocator, filename, std.math.maxInt(usize));
     defer std.heap.page_allocator.free(file_contents);
 
-    if (file_contents.len > 0) {
-        @panic("Scanner not implemented");
-    } else {
-        try std.io.getStdOut().writer().print("EOF  null\n", .{}); // Placeholder, remove this line when implementing the scanner
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    defer {
+        const deinit_status = gpa.deinit();
+        if (deinit_status == .leak) @panic("leak detected in allocator");
     }
+
+    const tokens = try scanner.tokenize(allocator, file_contents);
+    defer tokens.deinit();
+
+    try scanner.format(tokens.items, file_contents, std.io.getStdOut().writer());
 }
