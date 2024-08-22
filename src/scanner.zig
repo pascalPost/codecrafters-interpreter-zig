@@ -56,6 +56,10 @@ pub const Token = struct {
     length: usize,
 
     // literal: anytype,
+
+    pub fn init(tokenType: TokenType, start: usize, length: usize) Token {
+        return Token{ .type = tokenType, .start = start, .length = length };
+    }
 };
 
 pub fn eql(a: Token, b: Token) bool {
@@ -76,16 +80,16 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8) !std.ArrayLis
     const len = content.len;
     while (i < len) {
         const token: ?Token = switch (content[i]) {
-            '(' => Token{ .type = .LEFT_PAREN, .start = i, .length = 1 },
-            ')' => Token{ .type = .RIGHT_PAREN, .start = i, .length = 1 },
-            '{' => Token{ .type = .LEFT_BRACE, .start = i, .length = 1 },
-            '}' => Token{ .type = .RIGHT_BRACE, .start = i, .length = 1 },
-            ',' => Token{ .type = .COMMA, .start = i, .length = 1 },
-            '.' => Token{ .type = .DOT, .start = i, .length = 1 },
-            '-' => Token{ .type = .MINUS, .start = i, .length = 1 },
-            '+' => Token{ .type = .PLUS, .start = i, .length = 1 },
-            ';' => Token{ .type = .SEMICOLON, .start = i, .length = 1 },
-            '*' => Token{ .type = .STAR, .start = i, .length = 1 },
+            '(' => Token.init(.LEFT_PAREN, i, 1),
+            ')' => Token.init(.RIGHT_PAREN, i, 1),
+            '{' => Token.init(.LEFT_BRACE, i, 1),
+            '}' => Token.init(.RIGHT_BRACE, i, 1),
+            ',' => Token.init(.COMMA, i, 1),
+            '.' => Token.init(.DOT, i, 1),
+            '-' => Token.init(.MINUS, i, 1),
+            '+' => Token.init(.PLUS, i, 1),
+            ';' => Token.init(.SEMICOLON, i, 1),
+            '*' => Token.init(.STAR, i, 1),
             else => null,
         };
 

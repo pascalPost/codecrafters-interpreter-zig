@@ -11,7 +11,7 @@ test "Empty file" {
     defer tokens.deinit();
 
     try expect(tokens.items.len == 1);
-    try expect(eql(tokens.items[0], Token{ .type = .EOF, .start = 0, .length = 0 }));
+    try expect(eql(tokens.items[0], Token.init(.EOF, 0, 0)));
 }
 
 test "Parentheses" {
@@ -20,10 +20,10 @@ test "Parentheses" {
     defer tokens.deinit();
 
     try expect(tokens.items.len == 4);
-    try expect(eql(tokens.items[0], Token{ .type = .LEFT_PAREN, .start = 0, .length = 1 }));
-    try expect(eql(tokens.items[1], Token{ .type = .LEFT_PAREN, .start = 1, .length = 1 }));
-    try expect(eql(tokens.items[2], Token{ .type = .RIGHT_PAREN, .start = 2, .length = 1 }));
-    try expect(eql(tokens.items[3], Token{ .type = .EOF, .start = 3, .length = 0 }));
+    try expect(eql(tokens.items[0], Token.init(.LEFT_PAREN, 0, 1)));
+    try expect(eql(tokens.items[1], Token.init(.LEFT_PAREN, 1, 1)));
+    try expect(eql(tokens.items[2], Token.init(.RIGHT_PAREN, 2, 1)));
+    try expect(eql(tokens.items[3], Token.init(.EOF, 3, 0)));
 }
 
 test "Braces" {
@@ -32,11 +32,11 @@ test "Braces" {
     defer tokens.deinit();
 
     try expect(tokens.items.len == 5);
-    try expect(eql(tokens.items[0], Token{ .type = .LEFT_BRACE, .start = 0, .length = 1 }));
-    try expect(eql(tokens.items[1], Token{ .type = .LEFT_BRACE, .start = 1, .length = 1 }));
-    try expect(eql(tokens.items[2], Token{ .type = .RIGHT_BRACE, .start = 2, .length = 1 }));
-    try expect(eql(tokens.items[3], Token{ .type = .RIGHT_BRACE, .start = 3, .length = 1 }));
-    try expect(eql(tokens.items[4], Token{ .type = .EOF, .start = 4, .length = 0 }));
+    try expect(eql(tokens.items[0], Token.init(.LEFT_BRACE, 0, 1)));
+    try expect(eql(tokens.items[1], Token.init(.LEFT_BRACE, 1, 1)));
+    try expect(eql(tokens.items[2], Token.init(.RIGHT_BRACE, 2, 1)));
+    try expect(eql(tokens.items[3], Token.init(.RIGHT_BRACE, 3, 1)));
+    try expect(eql(tokens.items[4], Token.init(.EOF, 4, 0)));
 }
 
 test "single-character tokens" {
@@ -45,15 +45,15 @@ test "single-character tokens" {
     defer tokens.deinit();
 
     try expect(tokens.items.len == 11);
-    try expect(eql(tokens.items[0], Token{ .type = .LEFT_PAREN, .start = 0, .length = 1 }));
-    try expect(eql(tokens.items[1], Token{ .type = .LEFT_BRACE, .start = 1, .length = 1 }));
-    try expect(eql(tokens.items[2], Token{ .type = .STAR, .start = 2, .length = 1 }));
-    try expect(eql(tokens.items[3], Token{ .type = .DOT, .start = 3, .length = 1 }));
-    try expect(eql(tokens.items[4], Token{ .type = .COMMA, .start = 4, .length = 1 }));
-    try expect(eql(tokens.items[5], Token{ .type = .PLUS, .start = 5, .length = 1 }));
-    try expect(eql(tokens.items[6], Token{ .type = .MINUS, .start = 6, .length = 1 }));
-    try expect(eql(tokens.items[7], Token{ .type = .SEMICOLON, .start = 7, .length = 1 }));
-    try expect(eql(tokens.items[8], Token{ .type = .RIGHT_BRACE, .start = 8, .length = 1 }));
-    try expect(eql(tokens.items[9], Token{ .type = .RIGHT_PAREN, .start = 9, .length = 1 }));
-    try expect(eql(tokens.items[10], Token{ .type = .EOF, .start = 10, .length = 0 }));
+    try expect(eql(tokens.items[0], Token.init(.LEFT_PAREN, 0, 1)));
+    try expect(eql(tokens.items[1], Token.init(.LEFT_BRACE, 1, 1)));
+    try expect(eql(tokens.items[2], Token.init(.STAR, 2, 1)));
+    try expect(eql(tokens.items[3], Token.init(.DOT, 3, 1)));
+    try expect(eql(tokens.items[4], Token.init(.COMMA, 4, 1)));
+    try expect(eql(tokens.items[5], Token.init(.PLUS, 5, 1)));
+    try expect(eql(tokens.items[6], Token.init(.MINUS, 6, 1)));
+    try expect(eql(tokens.items[7], Token.init(.SEMICOLON, 7, 1)));
+    try expect(eql(tokens.items[8], Token.init(.RIGHT_BRACE, 8, 1)));
+    try expect(eql(tokens.items[9], Token.init(.RIGHT_PAREN, 9, 1)));
+    try expect(eql(tokens.items[10], Token.init(.EOF, 10, 0)));
 }
