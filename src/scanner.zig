@@ -80,6 +80,12 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8) !std.ArrayLis
             ')' => Token{ .type = .RIGHT_PAREN, .start = i, .length = 1 },
             '{' => Token{ .type = .LEFT_BRACE, .start = i, .length = 1 },
             '}' => Token{ .type = .RIGHT_BRACE, .start = i, .length = 1 },
+            ',' => Token{ .type = .COMMA, .start = i, .length = 1 },
+            '.' => Token{ .type = .DOT, .start = i, .length = 1 },
+            '-' => Token{ .type = .MINUS, .start = i, .length = 1 },
+            '+' => Token{ .type = .PLUS, .start = i, .length = 1 },
+            ';' => Token{ .type = .SEMICOLON, .start = i, .length = 1 },
+            '*' => Token{ .type = .STAR, .start = i, .length = 1 },
             else => null,
         };
 
@@ -93,10 +99,10 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8) !std.ArrayLis
     return tokens;
 }
 
-pub fn format(tokens: []Token, content: []const u8,writer: anytype) !void {
+pub fn format(tokens: []Token, content: []const u8, writer: anytype) !void {
     for (tokens) |token| {
         const tokenType = std.enums.tagName(TokenType, token.type) orelse unreachable;
         const lexemeStr = lexeme(token, content);
-        try writer.print("{s} {s} null\n", .{ tokenType , lexemeStr });
+        try writer.print("{s} {s} null\n", .{ tokenType, lexemeStr });
     }
 }
