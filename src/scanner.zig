@@ -82,13 +82,18 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
 
     // var start: usize = 0;
     // var current: usize = 0;
-    const line = 1;
+    var line: usize = 1;
 
     var errors: usize = 0;
     var i: usize = 0;
     const len = content.len;
     while (i < len) {
         const token: ?Token = switch (content[i]) {
+            ' ', '\t', '\r' => null,
+            '\n' => blk: {
+                line += 1;
+                break :blk null;
+            },
             '(' => Token.init(.LEFT_PAREN, i, 1),
             ')' => Token.init(.RIGHT_PAREN, i, 1),
             '{' => Token.init(.LEFT_BRACE, i, 1),
@@ -143,6 +148,7 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
                     while (i < len - 1 and content[i] != '\n') {
                         i += 1;
                     }
+                    line += 1;
                     break :blk null;
                 }
                 break :blk Token.init(.SLASH, i, 1);

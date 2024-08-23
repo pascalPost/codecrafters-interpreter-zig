@@ -163,6 +163,19 @@ test "relational operators" {
     try expect(eql(tokens.items[4], Token.init(.EOF, 6, 0)));
 }
 
+test "comment" {
+    const content = "// Comment";
+
+    const res = try tokenize(std.testing.allocator, content[0..], std.io.getStdErr().writer());
+    const tokens = res.tokens;
+    defer tokens.deinit();
+    const errors = res.errors;
+
+    try expect(errors == 0);
+    try expect(tokens.items.len == 1);
+    try expect(eql(tokens.items[0], Token.init(.EOF, 10, 0)));
+}
+
 test "division operator & comments" {
     const content = "/// comment\n/";
 
@@ -177,8 +190,8 @@ test "division operator & comments" {
     try expect(eql(tokens.items[1], Token.init(.EOF, 13, 0)));
 }
 
-test "comment" {
-    const content = "// Comment";
+test "whitespace" {
+    const content = "( \t\n)";
 
     const res = try tokenize(std.testing.allocator, content[0..], std.io.getStdErr().writer());
     const tokens = res.tokens;
@@ -186,6 +199,8 @@ test "comment" {
     const errors = res.errors;
 
     try expect(errors == 0);
-    try expect(tokens.items.len == 1);
-    try expect(eql(tokens.items[0], Token.init(.EOF, 10, 0)));
+    try expect(tokens.items.len == 3);
+    try expect(eql(tokens.items[0], Token.init(.LEFT_PAREN, 0, 1)));
+    try expect(eql(tokens.items[1], Token.init(.RIGHT_PAREN, 4, 1)));
+    try expect(eql(tokens.items[2], Token.init(.EOF, 5, 0)));
 }
