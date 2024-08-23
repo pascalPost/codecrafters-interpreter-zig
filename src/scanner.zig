@@ -136,6 +136,17 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
                 }
                 break :blk Token.init(.GREATER, i, 1);
             },
+            '/' => blk: {
+                if (i + 1 < len and content[i + 1] == '/') {
+                    // comment, discard until newline
+                    i += 1;
+                    while (i < len and content[i] != '\n') {
+                        i += 1;
+                    }
+                    break :blk null;
+                }
+                break :blk Token.init(.SLASH, i, 1);
+            },
         };
 
         if (token) |t| try tokens.append(t);
