@@ -111,3 +111,21 @@ test "lexical errors" {
     const errorMsg = "[line 1] Error: Unexpected character: $\n[line 1] Error: Unexpected character: #\n";
     try expect(std.mem.eql(u8, errorMsg, errOut.items[0..]));
 }
+
+test "assignment & equality operators" {
+    const content = "={===}";
+
+    const res = try tokenize(std.testing.allocator, content[0..], std.io.getStdErr().writer());
+    const tokens = res.tokens;
+    defer tokens.deinit();
+    const errors = res.errors;
+
+    try expect(errors == 0);
+    try expect(tokens.items.len == 6);
+    try expect(eql(tokens.items[0], Token.init(.EQUAL, 0, 1)));
+    try expect(eql(tokens.items[1], Token.init(.LEFT_BRACE, 1, 1)));
+    try expect(eql(tokens.items[2], Token.init(.EQUAL_EQUAL, 2, 2)));
+    try expect(eql(tokens.items[3], Token.init(.EQUAL, 4, 1)));
+    try expect(eql(tokens.items[4], Token.init(.RIGHT_BRACE, 5, 1)));
+    try expect(eql(tokens.items[5], Token.init(.EOF, 6, 0)));
+}

@@ -75,10 +75,7 @@ fn reportError(errorWriter: anytype, content: []const u8, pos: usize, length: us
     try errorWriter.print("[line {d}] Error: Unexpected character: {s}\n", .{ line, str });
 }
 
-pub const ScannerResult = struct {
-    tokens: std.ArrayList(Token),
-    errors: usize
-};
+pub const ScannerResult = struct { tokens: std.ArrayList(Token), errors: usize };
 
 pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anytype) !ScannerResult {
     var tokens = std.ArrayList(Token).init(allocator);
@@ -102,6 +99,14 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
             '+' => Token.init(.PLUS, i, 1),
             ';' => Token.init(.SEMICOLON, i, 1),
             '*' => Token.init(.STAR, i, 1),
+            '=' => blk: {
+                if (i + 1 < len and content[i + 1] == '=') {
+                    const token = Token.init(.EQUAL_EQUAL, i, 2);
+                    i += 1;
+                    break :blk token;
+                }
+                break :blk Token.init(.EQUAL, i, 1);
+            },
             else => blk: {
                 try reportError(errorWriter, content, i, 1, line);
                 errors += 1;
