@@ -34,6 +34,6 @@ pub fn main() !void {
     try scanner.format(scanner_result.tokens.items, file_contents, std.io.getStdOut().writer());
 
     if (scanner_result.errors > 0) {
-        std.process.exit(std.process.exit(1));
+        std.process.exit(std.process.exit(65)); // EX_DATAERR (65) from sysexits.h
     }
 }
