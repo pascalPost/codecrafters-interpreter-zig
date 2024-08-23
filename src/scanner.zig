@@ -70,12 +70,24 @@ fn lexeme(token: Token, content: []const u8) []const u8 {
     return content[token.start .. token.start + token.length];
 }
 
-pub fn tokenize(allocator: std.mem.Allocator, content: []const u8) !std.ArrayList(Token) {
+fn reportError(errorWriter: anytype, content: []const u8, pos: usize, length: usize, line: usize) !void {
+    const str = content[pos .. pos + length];
+    try errorWriter.print("[line {d}] Error: Unexpected character: {s}\n", .{ line, str });
+}
+
+pub const ScannerResult = struct {
+    tokens: std.ArrayList(Token),
+    errors: usize
+};
+
+pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anytype) !ScannerResult {
     var tokens = std.ArrayList(Token).init(allocator);
 
     // var start: usize = 0;
     // var current: usize = 0;
+    const line = 1;
 
+    var errors: usize = 0;
     var i: usize = 0;
     const len = content.len;
     while (i < len) {
@@ -90,7 +102,11 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8) !std.ArrayLis
             '+' => Token.init(.PLUS, i, 1),
             ';' => Token.init(.SEMICOLON, i, 1),
             '*' => Token.init(.STAR, i, 1),
-            else => null,
+            else => blk: {
+                try reportError(errorWriter, content, i, 1, line);
+                errors += 1;
+                break :blk null;
+            },
         };
 
         if (token) |t| try tokens.append(t);
@@ -100,7 +116,7 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8) !std.ArrayLis
 
     try tokens.append(Token{ .type = TokenType.EOF, .start = i, .length = 0 });
 
-    return tokens;
+    return .{ .tokens = tokens, .errors = errors };
 }
 
 pub fn format(tokens: []Token, content: []const u8, writer: anytype) !void {

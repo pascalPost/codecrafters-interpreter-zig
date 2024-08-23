@@ -28,8 +28,12 @@ pub fn main() !void {
         if (deinit_status == .leak) @panic("leak detected in allocator");
     }
 
-    const tokens = try scanner.tokenize(allocator, file_contents);
-    defer tokens.deinit();
+    const scanner_result = try scanner.tokenize(allocator, file_contents, std.io.getStdErr().writer());
+    defer scanner_result.tokens.deinit();
 
-    try scanner.format(tokens.items, file_contents, std.io.getStdOut().writer());
+    try scanner.format(scanner_result.tokens.items, file_contents, std.io.getStdOut().writer());
+
+    if (scanner_result.errors > 0) {
+        std.process.exit(std.process.exit(1));
+    }
 }
