@@ -140,7 +140,7 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
                 if (i + 1 < len and content[i + 1] == '/') {
                     // comment, discard until newline
                     i += 1;
-                    while (i < len and content[i] != '\n') {
+                    while (i < len - 1 and content[i] != '\n') {
                         i += 1;
                     }
                     break :blk null;
