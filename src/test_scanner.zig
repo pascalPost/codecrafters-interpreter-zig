@@ -145,3 +145,20 @@ test "negation & inequality operators" {
     try expect(eql(tokens.items[2], Token.init(.EQUAL_EQUAL, 3, 2)));
     try expect(eql(tokens.items[3], Token.init(.EOF, 5, 0)));
 }
+
+test "relational operators" {
+    const content = "<<=>>=";
+
+    const res = try tokenize(std.testing.allocator, content[0..], std.io.getStdErr().writer());
+    const tokens = res.tokens;
+    defer tokens.deinit();
+    const errors = res.errors;
+
+    try expect(errors == 0);
+    try expect(tokens.items.len == 5);
+    try expect(eql(tokens.items[0], Token.init(.LESS, 0, 1)));
+    try expect(eql(tokens.items[1], Token.init(.LESS_EQUAL, 1, 2)));
+    try expect(eql(tokens.items[2], Token.init(.GREATER, 3, 1)));
+    try expect(eql(tokens.items[3], Token.init(.GREATER_EQUAL, 4, 2)));
+    try expect(eql(tokens.items[4], Token.init(.EOF, 6, 0)));
+}
