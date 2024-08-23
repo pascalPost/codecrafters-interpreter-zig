@@ -99,6 +99,14 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
             '+' => Token.init(.PLUS, i, 1),
             ';' => Token.init(.SEMICOLON, i, 1),
             '*' => Token.init(.STAR, i, 1),
+            '!' => blk: {
+                if (i + 1 < len and content[i + 1] == '=') {
+                    const token = Token.init(.BANG_EQUAL, i, 2);
+                    i += 1;
+                    break :blk token;
+                }
+                break :blk Token.init(.BANG, i, 1);
+            },
             '=' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
                     const token = Token.init(.EQUAL_EQUAL, i, 2);
