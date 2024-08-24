@@ -204,3 +204,24 @@ test "whitespace" {
     try expect(eql(tokens.items[1], Token.init(.RIGHT_PAREN, 4, 1)));
     try expect(eql(tokens.items[2], Token.init(.EOF, 5, 0)));
 }
+
+test "multi-line errors" {
+    const content = "# (\n)\t@";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const res = try tokenize(std.testing.allocator, content[0..], errOut.writer());
+    const tokens = res.tokens;
+    defer tokens.deinit();
+    const errors = res.errors;
+
+    try expect(tokens.items.len == 3);
+    try expect(eql(tokens.items[0], Token.init(.LEFT_PAREN, 2, 1)));
+    try expect(eql(tokens.items[1], Token.init(.RIGHT_PAREN, 4, 1)));
+    try expect(eql(tokens.items[2], Token.init(.EOF, 7, 0)));
+
+    try expect(errors == 2);
+    const errorMsg = "[line 1] Error: Unexpected character: #\n[line 2] Error: Unexpected character: @\n";
+    try expect(std.mem.eql(u8, errorMsg, errOut.items[0..]));
+}
