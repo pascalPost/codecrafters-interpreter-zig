@@ -355,3 +355,21 @@ test "number literals" {
     try expect(eql(scanner.tokens.items[2], Token.init(.NUMBER, 8, 3, .{ .number = 44.0 })));
     try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 11, 0, null)));
 }
+
+test "identifiers" {
+    const content = "foo bar _hello";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    defer scanner.deinit();
+
+    try expect(errOut.items.len == 0); // no error output
+    try expect(scanner.errors == 0);
+    try expect(scanner.tokens.items.len == 4);
+    try expect(eql(scanner.tokens.items[0], Token.init(.IDENTIFIER, 0, 3, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.IDENTIFIER, 4, 3, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.IDENTIFIER, 8, 6, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 14, 0, null)));
+}

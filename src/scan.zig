@@ -173,20 +173,32 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                 const store = try allocator.dupe(u8, content[strStart + 1 .. i]);
                 break :blk Token.init(.STRING, strStart, i - strStart + 1, .{ .string = store });
             },
-            48...57 => blk: {
+            '0'...'9' => blk: {
                 // number literal
                 const numStart = i;
-                while (i + 1 < len and content[i + 1] >= 48 and content[i + 1] <= 57) i += 1;
+                while (i + 1 < len and content[i + 1] >= '0' and content[i + 1] <= '9') i += 1;
                 if (i + 1 < len and content[i + 1] == '.') i += 1;
 
                 // this option would disallow trailing dots
                 // if (i + 2 < len and content[i + 1] == '.' and content[i + 2] >= 48 and content[i + 2] <= 57) i += 1;
 
-                while (i + 1 < len and content[i + 1] >= 48 and content[i + 1] <= 57) i += 1;
+                while (i + 1 < len and content[i + 1] >= '0' and content[i + 1] <= '9') i += 1;
 
                 const numEnd = i + 1;
                 const num = try std.fmt.parseFloat(f64, content[numStart..numEnd]);
                 break :blk Token.init(.NUMBER, numStart, numEnd - numStart, .{ .number = num });
+            },
+            'A'...'Z', 'a'...'z', '_' => blk: {
+                // identifier
+                const numStart = i;
+                while (i + 1 < len) : (i += 1) {
+                    const c = content[i + 1];
+                    if (!((c >= '0' and c <= '9') or (c >= 'A' and c <= 'Z') or (c >= 'a' and c <= 'z') or c == '_')) {
+                        break;
+                    }
+                }
+                const numEnd = i + 1;
+                break :blk Token.init(.IDENTIFIER, numStart, numEnd - numStart, null);
             },
             else => blk: {
                 const unexpected_char = content[i .. i + 1];
