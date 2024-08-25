@@ -211,7 +211,7 @@ pub const Scanner = struct {
         return tokenize(allocator, content, errorWriter);
     }
 
-    pub fn deinit(self: *Scanner) void {
+    pub fn deinit(self: *const Scanner) void {
         for (self.tokens.items) |*item| {
             if (item.type == .STRING) {
                 self.allocator.free(item.literal.?.string);

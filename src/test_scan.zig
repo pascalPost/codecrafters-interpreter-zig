@@ -1,6 +1,6 @@
 const std = @import("std");
 const expect = std.testing.expect;
-const scan = @import("scanner.zig");
+const scan = @import("scan.zig");
 const eql = scan.eql;
 const Token = scan.Token;
 
@@ -10,7 +10,7 @@ test "empty file" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -25,7 +25,7 @@ test "parentheses" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -43,7 +43,7 @@ test "braces" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -62,7 +62,7 @@ test "single-character tokens" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -87,7 +87,7 @@ test "lexical errors" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(scanner.tokens.items.len == 4);
@@ -107,7 +107,7 @@ test "assignment & equality operators" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -127,7 +127,7 @@ test "negation & inequality operators" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -145,7 +145,7 @@ test "relational operators" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -164,7 +164,7 @@ test "comment" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -179,7 +179,7 @@ test "division operator & comments" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -195,7 +195,7 @@ test "whitespace" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -212,7 +212,7 @@ test "multi-line errors" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(scanner.tokens.items.len == 3);
@@ -231,7 +231,7 @@ test "string literals" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(errOut.items.len == 0); // no error output
@@ -250,7 +250,7 @@ test "unterminated string" {
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
     defer errOut.deinit();
 
-    var scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
     defer scanner.deinit();
 
     try expect(scanner.tokens.items.len == 1);
