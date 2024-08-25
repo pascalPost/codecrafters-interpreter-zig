@@ -238,7 +238,7 @@ test "string literals" {
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
 
-    try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 8)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 9)));
     try expect(std.mem.eql(u8, scanner.tokens.items[0].literal.?.string, "foo baz"));
 
     try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 9, 0)));

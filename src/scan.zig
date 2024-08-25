@@ -73,11 +73,7 @@ pub fn eql(a: Token, b: Token) bool {
 }
 
 fn lexeme(token: Token, content: []const u8) []const u8 {
-    if (token.length == 0) {
-        return "";
-    }
-
-    return content[token.start .. token.start + token.length + 1];
+    return content[token.start .. token.start + token.length];
 }
 
 fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anytype) !Scanner {
@@ -166,7 +162,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                     break :blk null;
                 }
 
-                var token = Token.init(.STRING, strStart, i - strStart);
+                var token = Token.init(.STRING, strStart, i - strStart + 1);
 
                 // allocate string content
                 const store = try allocator.dupe(u8, content[strStart + 1 .. i]);
