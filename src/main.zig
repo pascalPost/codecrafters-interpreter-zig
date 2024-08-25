@@ -1,5 +1,5 @@
 const std = @import("std");
-const scan = @import("scanner.zig");
+const scan = @import("scan.zig");
 
 pub fn main() !void {
     const args = try std.process.argsAlloc(std.heap.page_allocator);
