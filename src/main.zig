@@ -1,5 +1,5 @@
 const std = @import("std");
-const scanner = @import("scanner.zig");
+const scan = @import("scanner.zig");
 
 pub fn main() !void {
     const args = try std.process.argsAlloc(std.heap.page_allocator);
@@ -28,12 +28,12 @@ pub fn main() !void {
         if (deinit_status == .leak) @panic("leak detected in allocator");
     }
 
-    const scanner_result = try scanner.tokenize(allocator, file_contents, std.io.getStdErr().writer());
-    defer scanner_result.tokens.deinit();
+    const scanner = try scan.Scanner.init(allocator, file_contents, std.io.getStdErr().writer());
+    defer scanner.deinit();
 
-    try scanner.format(scanner_result.tokens.items, file_contents, std.io.getStdOut().writer());
+    try scanner.format(scanner.tokens.items, file_contents, std.io.getStdOut().writer());
 
-    if (scanner_result.errors > 0) {
+    if (scanner.errors > 0) {
         std.process.exit(std.process.exit(65)); // EX_DATAERR (65) from sysexits.h
     }
 }
