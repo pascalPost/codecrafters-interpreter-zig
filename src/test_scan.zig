@@ -225,7 +225,7 @@ test "multi-line errors" {
     try expect(std.mem.eql(u8, errorMsg, errOut.items[0..]));
 }
 
-test "string literals" {
+test "string literal" {
     const content = "\"foo baz\"";
 
     var errOut = std.ArrayList(u8).init(std.testing.allocator);
@@ -239,6 +239,22 @@ test "string literals" {
     try expect(scanner.tokens.items.len == 2);
     try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 9, .{ .string = "foo baz" })));
     try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 9, 0, null)));
+}
+
+test "string literal (empty string)" {
+    const content = "\"\"";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    defer scanner.deinit();
+
+    try expect(errOut.items.len == 0); // no error output
+    try expect(scanner.errors == 0);
+    try expect(scanner.tokens.items.len == 2);
+    try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 2, .{ .string = "" })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 2, 0, null)));
 }
 
 test "unterminated string" {
