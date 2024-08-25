@@ -31,7 +31,7 @@ pub fn main() !void {
     const scanner = try scan.Scanner.init(allocator, file_contents, std.io.getStdErr().writer());
     defer scanner.deinit();
 
-    try scanner.format(scanner.tokens.items, file_contents, std.io.getStdOut().writer());
+    try scan.format(scanner.tokens.items, file_contents, std.io.getStdOut().writer());
 
     if (scanner.errors > 0) {
         std.process.exit(std.process.exit(65)); // EX_DATAERR (65) from sysexits.h
