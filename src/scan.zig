@@ -1,4 +1,5 @@
 const std = @import("std");
+const assert = std.debug.assert;
 
 const TokenType = enum {
     // Single-character tokens.
@@ -69,11 +70,12 @@ pub const Token = struct {
 };
 
 pub fn eql(a: Token, b: Token) bool {
-    const literal = if (a.type == .STRING)
-        b.type == .STRING and std.mem.eql(u8, a.literal.?.string, b.literal.?.string)
-    else
-        a.literal == null and b.literal == null;
-    return a.type == b.type and a.start == b.start and a.length == b.length and literal;
+    const type_and_literal: bool = switch (a.type) {
+        .STRING => b.type == .STRING and std.mem.eql(u8, a.literal.?.string, b.literal.?.string),
+        .NUMBER => b.type == .NUMBER and a.literal.?.number == b.literal.?.number,
+        else => a.type == b.type and a.literal == null and b.literal == null,
+    };
+    return type_and_literal and a.start == b.start and a.length == b.length;
 }
 
 fn lexeme(token: Token, content: []const u8) []const u8 {
@@ -149,16 +151,18 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                 break :blk Token.init(.SLASH, i, 1, null);
             },
             '"' => blk: {
-                const strStart = i;
                 // string literal
+                const strStart = i;
                 i += 1;
                 while (i < len - 1 and content[i] != '"') {
                     i += 1;
+                    assert(i < len);
                     if (content[i] == '\n') {
                         line += 1;
                     }
                 }
 
+                assert(i < len);
                 if (content[i] != '"') {
                     // unterminated string
                     try errorWriter.print("[line {d}] Error: Unterminated string.\n", .{line});
@@ -168,6 +172,21 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
 
                 const store = try allocator.dupe(u8, content[strStart + 1 .. i]);
                 break :blk Token.init(.STRING, strStart, i - strStart + 1, .{ .string = store });
+            },
+            48...57 => blk: {
+                // number literal
+                const numStart = i;
+                while (i + 1 < len and content[i + 1] >= 48 and content[i + 1] <= 57) i += 1;
+                if (i + 1 < len and content[i + 1] == '.') i += 1;
+
+                // this option would disallow trailing dots
+                // if (i + 2 < len and content[i + 1] == '.' and content[i + 2] >= 48 and content[i + 2] <= 57) i += 1;
+
+                while (i + 1 < len and content[i + 1] >= 48 and content[i + 1] <= 57) i += 1;
+
+                const numEnd = i + 1;
+                const num = try std.fmt.parseFloat(f64, content[numStart..numEnd]);
+                break :blk Token.init(.NUMBER, numStart, numEnd - numStart, .{ .number = num });
             },
             else => blk: {
                 const unexpected_char = content[i .. i + 1];
@@ -195,6 +214,17 @@ pub fn format(tokens: []Token, content: []const u8, writer: anytype) !void {
 
         switch (token.type) {
             .STRING => try writer.print("{s}\n", .{token.literal.?.string}),
+            .NUMBER => {
+                const number: f64 = token.literal.?.number;
+                const number_int: i64 = @intFromFloat(number);
+                const number_recast: f64 = @floatFromInt(number_int);
+
+                if (number == number_recast) {
+                    try writer.print("{d:.1}\n", .{number});
+                } else {
+                    try writer.print("{d}\n", .{number});
+                }
+            },
             else => try writer.print("{s}\n", .{"null"}),
         }
     }

@@ -257,3 +257,85 @@ test "unterminated string" {
     const errorMsg = "[line 1] Error: Unterminated string.\n";
     try expect(std.mem.eql(u8, errorMsg, errOut.items[0..]));
 }
+
+test "number literal (single digit)" {
+    const content = "4";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    defer scanner.deinit();
+
+    try expect(errOut.items.len == 0); // no error output
+    try expect(scanner.errors == 0);
+    try expect(scanner.tokens.items.len == 2);
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 1, .{ .number = 4 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 1, 0, null)));
+}
+
+test "number literal (two digits)" {
+    const content = "42";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    defer scanner.deinit();
+
+    try expect(errOut.items.len == 0); // no error output
+    try expect(scanner.errors == 0);
+    try expect(scanner.tokens.items.len == 2);
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 2, .{ .number = 42 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 2, 0, null)));
+}
+
+test "number literal (float)" {
+    const content = "42.0";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    defer scanner.deinit();
+
+    try expect(errOut.items.len == 0); // no error output
+    try expect(scanner.errors == 0);
+    try expect(scanner.tokens.items.len == 2);
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 4, .{ .number = 42.0 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 4, 0, null)));
+}
+
+test "number literal (float with trailing dot)" {
+    const content = "42.";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    defer scanner.deinit();
+
+    try expect(errOut.items.len == 0); // no error output
+    try expect(scanner.errors == 0);
+    try expect(scanner.tokens.items.len == 2);
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 3, .{ .number = 42.0 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 3, 0, null)));
+}
+
+test "number literals" {
+    const content = "42 43.0 44.";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const scanner = try scan.Scanner.init(std.testing.allocator, content, errOut.writer());
+    defer scanner.deinit();
+
+    try expect(errOut.items.len == 0); // no error output
+    try expect(scanner.errors == 0);
+    try expect(scanner.tokens.items.len == 4);
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 2, .{ .number = 42 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.NUMBER, 3, 4, .{ .number = 43.0 })));
+    try expect(eql(scanner.tokens.items[2], Token.init(.NUMBER, 8, 3, .{ .number = 44.0 })));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 11, 0, null)));
+}
