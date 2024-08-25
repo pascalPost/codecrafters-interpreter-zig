@@ -73,18 +73,17 @@ pub fn eql(a: Token, b: Token) bool {
 }
 
 fn lexeme(token: Token, content: []const u8) []const u8 {
-    return content[token.start .. token.start + token.length];
-}
+    if (token.length == 0) {
+        return "";
+    }
 
-// pub const ScannerResult = struct { tokens: std.ArrayList(Token), errors: usize };
+    return content[token.start .. token.start + token.length + 1];
+}
 
 fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anytype) !Scanner {
     var tokens = std.ArrayList(Token).init(allocator);
 
-    // var start: usize = 0;
-    // var current: usize = 0;
     var line: usize = 1;
-
     var errors: usize = 0;
     var i: usize = 0;
     const len = content.len;
@@ -198,7 +197,12 @@ pub fn format(tokens: []Token, content: []const u8, writer: anytype) !void {
     for (tokens) |token| {
         const tokenType = std.enums.tagName(TokenType, token.type) orelse unreachable;
         const lexemeStr = lexeme(token, content);
-        try writer.print("{s} {s} null\n", .{ tokenType, lexemeStr });
+        try writer.print("{s} {s} ", .{ tokenType, lexemeStr });
+
+        switch (token.type) {
+            .STRING => try writer.print("{s}\n", .{token.literal.?.string}),
+            else => try writer.print("{s}\n", .{"null"}),
+        }
     }
 }
 
