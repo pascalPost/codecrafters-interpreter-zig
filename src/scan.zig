@@ -51,6 +51,27 @@ const TokenType = enum {
     EOF,
 };
 
+const keyword_slice = [_]struct { []const u8, TokenType }{
+    .{ "and", .AND },
+    .{ "class", .CLASS },
+    .{ "else", .ELSE },
+    .{ "false", .FALSE },
+    .{ "for", .FOR },
+    .{ "fun", .FUN },
+    .{ "if", .IF },
+    .{ "nil", .NIL },
+    .{ "or", .OR },
+    .{ "print", .PRINT },
+    .{ "return", .RETURN },
+    .{ "super", .SUPER },
+    .{ "this", .THIS },
+    .{ "true", .TRUE },
+    .{ "var", .VAR },
+    .{ "while", .WHILE },
+};
+
+const keyword_type_map = std.StaticStringMap(TokenType).initComptime(keyword_slice);
+
 const LiteralStorage = union {
     // a small string optimization could be implemented here
     // another possibility would be to use a string oobject pool that only needs to be deallocated once
@@ -189,7 +210,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                 break :blk Token.init(.NUMBER, numStart, numEnd - numStart, .{ .number = num });
             },
             'A'...'Z', 'a'...'z', '_' => blk: {
-                // identifier
+                // keyword or identifier
                 const numStart = i;
                 while (i + 1 < len) : (i += 1) {
                     const c = content[i + 1];
@@ -198,6 +219,12 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                     }
                 }
                 const numEnd = i + 1;
+
+                const potential_keyword = content[numStart..numEnd];
+                if (keyword_type_map.get(potential_keyword)) |tokenType| {
+                    break :blk Token.init(tokenType, numStart, numEnd - numStart, null);
+                }
+
                 break :blk Token.init(.IDENTIFIER, numStart, numEnd - numStart, null);
             },
             else => blk: {
