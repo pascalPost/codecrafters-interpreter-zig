@@ -61,15 +61,19 @@ pub const Token = struct {
     type: TokenType,
     start: usize,
     length: usize,
-    literal: ?LiteralStorage = null,
+    literal: ?LiteralStorage,
 
-    pub fn init(tokenType: TokenType, start: usize, length: usize) Token {
-        return Token{ .type = tokenType, .start = start, .length = length };
+    pub fn init(tokenType: TokenType, start: usize, length: usize, literal: ?LiteralStorage) Token {
+        return Token{ .type = tokenType, .start = start, .length = length, .literal = literal };
     }
 };
 
 pub fn eql(a: Token, b: Token) bool {
-    return a.type == b.type and a.start == b.start and a.length == b.length;
+    const literal = if (a.type == .STRING)
+        b.type == .STRING and std.mem.eql(u8, a.literal.?.string, b.literal.?.string)
+    else
+        a.literal == null and b.literal == null;
+    return a.type == b.type and a.start == b.start and a.length == b.length and literal;
 }
 
 fn lexeme(token: Token, content: []const u8) []const u8 {
@@ -90,47 +94,47 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                 line += 1;
                 break :blk null;
             },
-            '(' => Token.init(.LEFT_PAREN, i, 1),
-            ')' => Token.init(.RIGHT_PAREN, i, 1),
-            '{' => Token.init(.LEFT_BRACE, i, 1),
-            '}' => Token.init(.RIGHT_BRACE, i, 1),
-            ',' => Token.init(.COMMA, i, 1),
-            '.' => Token.init(.DOT, i, 1),
-            '-' => Token.init(.MINUS, i, 1),
-            '+' => Token.init(.PLUS, i, 1),
-            ';' => Token.init(.SEMICOLON, i, 1),
-            '*' => Token.init(.STAR, i, 1),
+            '(' => Token.init(.LEFT_PAREN, i, 1, null),
+            ')' => Token.init(.RIGHT_PAREN, i, 1, null),
+            '{' => Token.init(.LEFT_BRACE, i, 1, null),
+            '}' => Token.init(.RIGHT_BRACE, i, 1, null),
+            ',' => Token.init(.COMMA, i, 1, null),
+            '.' => Token.init(.DOT, i, 1, null),
+            '-' => Token.init(.MINUS, i, 1, null),
+            '+' => Token.init(.PLUS, i, 1, null),
+            ';' => Token.init(.SEMICOLON, i, 1, null),
+            '*' => Token.init(.STAR, i, 1, null),
             '!' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.BANG_EQUAL, i, 2);
+                    const token = Token.init(.BANG_EQUAL, i, 2, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.BANG, i, 1);
+                break :blk Token.init(.BANG, i, 1, null);
             },
             '=' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.EQUAL_EQUAL, i, 2);
+                    const token = Token.init(.EQUAL_EQUAL, i, 2, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.EQUAL, i, 1);
+                break :blk Token.init(.EQUAL, i, 1, null);
             },
             '<' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.LESS_EQUAL, i, 2);
+                    const token = Token.init(.LESS_EQUAL, i, 2, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.LESS, i, 1);
+                break :blk Token.init(.LESS, i, 1, null);
             },
             '>' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.GREATER_EQUAL, i, 2);
+                    const token = Token.init(.GREATER_EQUAL, i, 2, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.GREATER, i, 1);
+                break :blk Token.init(.GREATER, i, 1, null);
             },
             '/' => blk: {
                 if (i + 1 < len and content[i + 1] == '/') {
@@ -142,7 +146,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                     line += 1;
                     break :blk null;
                 }
-                break :blk Token.init(.SLASH, i, 1);
+                break :blk Token.init(.SLASH, i, 1, null);
             },
             '"' => blk: {
                 const strStart = i;
@@ -162,14 +166,8 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                     break :blk null;
                 }
 
-                var token = Token.init(.STRING, strStart, i - strStart + 1);
-
-                // allocate string content
                 const store = try allocator.dupe(u8, content[strStart + 1 .. i]);
-
-                token.literal = .{ .string = store };
-
-                break :blk token;
+                break :blk Token.init(.STRING, strStart, i - strStart + 1, .{ .string = store });
             },
             else => blk: {
                 const unexpected_char = content[i .. i + 1];
@@ -184,7 +182,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
         i += 1;
     }
 
-    try tokens.append(Token{ .type = TokenType.EOF, .start = i, .length = 0 });
+    try tokens.append(Token{ .type = TokenType.EOF, .start = i, .length = 0, .literal = null });
 
     return .{ .tokens = tokens, .errors = errors, .allocator = allocator };
 }
