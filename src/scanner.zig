@@ -50,12 +50,18 @@ const TokenType = enum {
     EOF,
 };
 
+const LiteralStorage = union {
+    // a small string optimization could be implemented here
+    // another possibility would be to use a string oobject pool that only needs to be deallocated once
+    string: []const u8,
+    number: f64,
+};
+
 pub const Token = struct {
     type: TokenType,
     start: usize,
     length: usize,
-
-    // literal: anytype,
+    literal: ?LiteralStorage = null,
 
     pub fn init(tokenType: TokenType, start: usize, length: usize) Token {
         return Token{ .type = tokenType, .start = start, .length = length };
@@ -68,11 +74,6 @@ pub fn eql(a: Token, b: Token) bool {
 
 fn lexeme(token: Token, content: []const u8) []const u8 {
     return content[token.start .. token.start + token.length];
-}
-
-fn reportError(errorWriter: anytype, content: []const u8, pos: usize, length: usize, line: usize) !void {
-    const str = content[pos .. pos + length];
-    try errorWriter.print("[line {d}] Error: Unexpected character: {s}\n", .{ line, str });
 }
 
 pub const ScannerResult = struct { tokens: std.ArrayList(Token), errors: usize };
@@ -120,11 +121,6 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
                 }
                 break :blk Token.init(.EQUAL, i, 1);
             },
-            else => blk: {
-                try reportError(errorWriter, content, i, 1, line);
-                errors += 1;
-                break :blk null;
-            },
             '<' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
                     const token = Token.init(.LESS_EQUAL, i, 2);
@@ -152,6 +148,39 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
                     break :blk null;
                 }
                 break :blk Token.init(.SLASH, i, 1);
+            },
+            '"' => blk: {
+                const strStart = i;
+                // string literal
+                i += 1;
+                while (i < len - 1 and content[i] != '"') {
+                    i += 1;
+                    if (content[i] == '\n') {
+                        line += 1;
+                    }
+                }
+
+                if (content[i] != '"') {
+                    // unterminated string
+                    try errorWriter.print("[line {d}] Error: Unterminated string.\n", .{ line });
+                    errors += 1;
+                    break :blk null;
+                }
+
+                var token = Token.init(.STRING, strStart, i - strStart);
+
+                // allocate string content
+                const store = try allocator.dupe(u8, content[strStart + 1 .. i]);
+
+                token.literal = .{ .string = store };
+
+                break :blk token;
+            },
+            else => blk: {
+                const unexpected_char = content[i .. i + 1];
+                try errorWriter.print("[line {d}] Error: Unexpected character: {s}\n", .{ line, unexpected_char });
+                errors += 1;
+                break :blk null;
             },
         };
 

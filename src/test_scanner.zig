@@ -225,3 +225,52 @@ test "multi-line errors" {
     const errorMsg = "[line 1] Error: Unexpected character: #\n[line 2] Error: Unexpected character: @\n";
     try expect(std.mem.eql(u8, errorMsg, errOut.items[0..]));
 }
+
+test "string literals" {
+    const allocator = std.testing.allocator;
+    const content = "\"foo baz\"";
+
+    const res = try tokenize(allocator, content[0..], std.io.getStdErr().writer());
+    const tokens = res.tokens;
+
+    // add this to a deinit own class
+    defer {
+        for (tokens.items) |*item| {
+            if (item.type == .STRING) {
+                allocator.free(item.literal.?.string);
+            }
+        }
+        tokens.deinit();
+    }
+
+    const errors = res.errors;
+
+    try expect(errors == 0);
+    try expect(tokens.items.len == 2);
+
+    try expect(eql(tokens.items[0], Token.init(.STRING, 0, 8)));
+    try expect(std.mem.eql(u8, tokens.items[0].literal.?.string, "foo baz"));
+
+    try expect(eql(tokens.items[1], Token.init(.EOF, 9, 0)));
+}
+
+test "unterminated string" {
+    const content = "\"bar";
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const res = try tokenize(std.testing.allocator, content[0..], errOut.writer());
+    const tokens = res.tokens;
+
+    defer tokens.deinit();
+
+    const errors = res.errors;
+
+    try expect(tokens.items.len == 1);
+    try expect(eql(tokens.items[0], Token.init(.EOF, 4, 0)));
+
+    try expect(errors == 1);
+    const errorMsg = "[line 1] Error: Unterminated string.\n";
+    try expect(std.mem.eql(u8, errorMsg, errOut.items[0..]));
+}
