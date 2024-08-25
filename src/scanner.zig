@@ -76,9 +76,9 @@ fn lexeme(token: Token, content: []const u8) []const u8 {
     return content[token.start .. token.start + token.length];
 }
 
-pub const ScannerResult = struct { tokens: std.ArrayList(Token), errors: usize };
+// pub const ScannerResult = struct { tokens: std.ArrayList(Token), errors: usize };
 
-pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anytype) !ScannerResult {
+fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anytype) !Scanner {
     var tokens = std.ArrayList(Token).init(allocator);
 
     // var start: usize = 0;
@@ -162,7 +162,7 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
 
                 if (content[i] != '"') {
                     // unterminated string
-                    try errorWriter.print("[line {d}] Error: Unterminated string.\n", .{ line });
+                    try errorWriter.print("[line {d}] Error: Unterminated string.\n", .{line});
                     errors += 1;
                     break :blk null;
                 }
@@ -191,7 +191,7 @@ pub fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: 
 
     try tokens.append(Token{ .type = TokenType.EOF, .start = i, .length = 0 });
 
-    return .{ .tokens = tokens, .errors = errors };
+    return .{ .tokens = tokens, .errors = errors, .allocator = allocator };
 }
 
 pub fn format(tokens: []Token, content: []const u8, writer: anytype) !void {
@@ -201,3 +201,22 @@ pub fn format(tokens: []Token, content: []const u8, writer: anytype) !void {
         try writer.print("{s} {s} null\n", .{ tokenType, lexemeStr });
     }
 }
+
+pub const Scanner = struct {
+    tokens: std.ArrayList(Token),
+    errors: usize,
+    allocator: std.mem.Allocator,
+
+    pub fn init(allocator: std.mem.Allocator, content: []const u8, errorWriter: anytype) !Scanner {
+        return tokenize(allocator, content, errorWriter);
+    }
+
+    pub fn deinit(self: *Scanner) void {
+        for (self.tokens.items) |*item| {
+            if (item.type == .STRING) {
+                self.allocator.free(item.literal.?.string);
+            }
+        }
+        self.tokens.deinit();
+    }
+};
