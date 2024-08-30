@@ -72,11 +72,33 @@ const keyword_slice = [_]struct { []const u8, TokenType }{
 
 const keyword_type_map = std.StaticStringMap(TokenType).initComptime(keyword_slice);
 
-const LiteralStorage = union {
+// const LiteralTag = enum { string, number };
+
+pub const LiteralStorage = union {
     // a small string optimization could be implemented here
     // another possibility would be to use a string oobject pool that only needs to be deallocated once
     string: []const u8,
     number: f64,
+
+    // pub fn format(self: LiteralStorage, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
+    //     _ = fmt;
+    //     _ = options;
+    //
+    //     switch (self) {
+    //         .string => try writer.print("{s}", .{self.string}),
+    //         .number => {
+    //             const number: f64 = self.number;
+    //             const number_int: i64 = @intFromFloat(number);
+    //             const number_recast: f64 = @floatFromInt(number_int);
+    //
+    //             if (number == number_recast) {
+    //                 try writer.print("{d:.1}", .{number});
+    //             } else {
+    //                 try writer.print("{d}", .{number});
+    //             }
+    //         },
+    //     }
+    // }
 };
 
 pub const Token = struct {

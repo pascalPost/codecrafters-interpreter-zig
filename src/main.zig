@@ -1,5 +1,6 @@
 const std = @import("std");
 const scan = @import("scan.zig");
+const parser = @import("parse.zig");
 
 pub fn main() !void {
     const args = try std.process.argsAlloc(std.heap.page_allocator);
@@ -13,7 +14,10 @@ pub fn main() !void {
     const command = args[1];
     const filename = args[2];
 
-    if (!std.mem.eql(u8, command, "tokenize")) {
+    const tokenize = std.mem.eql(u8, command, "tokenize");
+    const parse = std.mem.eql(u8, command, "parse");
+
+    if (!(tokenize or parse)) {
         std.debug.print("Unknown command: {s}\n", .{command});
         std.process.exit(1);
     }
@@ -31,9 +35,17 @@ pub fn main() !void {
     const scanner = try scan.Scanner.init(allocator, file_contents, std.io.getStdErr().writer());
     defer scanner.deinit();
 
-    try scan.format(scanner.tokens.items, file_contents, std.io.getStdOut().writer());
+    if (tokenize) {
+        try scan.format(scanner.tokens.items, file_contents, std.io.getStdOut().writer());
+    }
 
     if (scanner.errors > 0) {
         std.process.exit(std.process.exit(65)); // EX_DATAERR (65) from sysexits.h
+    }
+
+    if (parse) {
+        const expr = try parser.parse(allocator, scanner.tokens.items);
+        defer expr.destroy(allocator);
+        try std.io.getStdOut().writer().print("{}", .{expr});
     }
 }
