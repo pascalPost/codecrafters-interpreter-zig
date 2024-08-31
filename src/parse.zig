@@ -13,6 +13,7 @@ fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) !Expr {
         .TRUE => return Expr{ .literal = try Literal.create(allocator, .true, null) },
         .NIL => return Expr{ .literal = try Literal.create(allocator, .nil, null) },
         .NUMBER => return Expr{ .literal = try Literal.create(allocator, .number, .{ .number = token.literal.?.number }) },
+        .STRING => return Expr{ .literal = try Literal.create(allocator, .string, .{ .string = token.literal.?.string }) },
         else => unreachable,
     }
 }

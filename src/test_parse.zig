@@ -41,3 +41,13 @@ test "number literals" {
     try expect(expr.literal.type == .number);
     try expect(expr.literal.value.?.number == 35);
 }
+
+test "string literals" {
+        const allocator = std.testing.allocator;
+    const expr = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.STRING, 0, 1, .{ .string = "test" })});
+    defer expr.destroy(allocator);
+
+    try expect(expr == .literal);
+    try expect(expr.literal.type == .string);
+    try expect(std.mem.eql(u8, expr.literal.value.?.string, "test"));
+}
