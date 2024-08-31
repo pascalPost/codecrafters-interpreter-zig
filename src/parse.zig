@@ -2,6 +2,7 @@
 //! The parser is a recursive descent parser.
 //! The abstract syntax tree is a tree of expressions defined in the expressions module.
 //! Used grammer:
+//!    unary   = ( "!" | "-" ) unary | primary ;
 //!    primary = "false" | "true" | "nil" | NUMBER | STRING | "(" expression ")" ;
 
 const std = @import("std");
@@ -10,6 +11,8 @@ const ast = @import("expressions.zig");
 const Expr = ast.Expr;
 const Literal = ast.Literal;
 const Grouping = ast.Grouping;
+const Unary = ast.Unary;
+const Operator = ast.Operator;
 
 const Result = struct {
     expr: Expr,
@@ -20,6 +23,22 @@ const Result = struct {
     }
 };
 
+fn create_unary(allocator: std.mem.Allocator, tokens: []const scan.Token, op: Operator) std.mem.Allocator.Error!Result {
+    const right = try parse(allocator, tokens[1..]);
+    return Result.init(.{ .unary = try Unary.create(allocator, op, right.expr) }, right.tokens);
+}
+
+/// Parse a unary expression: ( "!" | "-" ) unary | primary ;
+fn unary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+    std.debug.assert(tokens.len > 0);
+    switch (tokens[0].type) {
+        .BANG => return create_unary(allocator, tokens, .bang),
+        .MINUS => return create_unary(allocator, tokens, .minus),
+        else => return primary(allocator, tokens),
+    }
+}
+
+/// Parse a primary expression: "false" | "true" | "nil" | NUMBER | STRING | "(" expression ")" ;
 fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
     std.debug.assert(tokens.len > 0);
     const token = tokens[0];
@@ -43,5 +62,5 @@ fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.All
 }
 
 pub fn parse(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
-    return primary(allocator, tokens);
+    return unary(allocator, tokens);
 }

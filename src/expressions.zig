@@ -2,7 +2,8 @@ const std = @import("std");
 const Token = @import("scan.zig").Token;
 const LiteralStorage = @import("scan.zig").LiteralStorage;
 
-const Operator = enum(u2) {
+pub const Operator = enum(u3) {
+    bang,
     minus,
     plus,
     slash,
@@ -13,6 +14,7 @@ const Operator = enum(u2) {
         _ = options;
 
         const str = switch (self) {
+            .bang => "!",
             .minus => "-",
             .plus => "+",
             .slash => "/",
@@ -60,12 +62,12 @@ pub const Expr = union(Tag) {
     }
 };
 
-const Binary = struct {
+pub const Binary = struct {
     left: Expr,
     operator: Operator,
     right: Expr,
 
-    fn create(allocator: std.mem.Allocator, left: Expr, op: Operator, right: Expr) !*Binary {
+    pub fn create(allocator: std.mem.Allocator, left: Expr, op: Operator, right: Expr) !*Binary {
         const binary = try allocator.create(Binary);
         binary.left = left;
         binary.operator = op;
@@ -133,11 +135,11 @@ pub const Literal = struct {
     }
 };
 
-const Unary = struct {
+pub const Unary = struct {
     operator: Operator,
     right: Expr,
 
-    fn create(allocator: std.mem.Allocator, op: Operator, right: Expr) !*Unary {
+    pub fn create(allocator: std.mem.Allocator, op: Operator, right: Expr) !*Unary {
         const unary = try allocator.create(Unary);
         unary.operator = op;
         unary.right = right;

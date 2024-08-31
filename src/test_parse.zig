@@ -91,3 +91,34 @@ test "parentheses (double)" {
     try expect(res.expr.grouping.expr.grouping.expr.literal.type == .number);
     try expect(res.expr.grouping.expr.grouping.expr.literal.value.?.number == 26.13);
 }
+
+test "unary operators" {
+    const allocator = std.testing.allocator;
+
+    const tokens = [_]Token{
+        Token.init(.BANG, 0, 1, null),
+        Token.init(.TRUE, 0, 1, null),
+        Token.init(.MINUS, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 26.13 }),
+    };
+
+    {
+        const res = try parse.parse(allocator, &tokens);
+        defer res.expr.destroy(allocator);
+
+        try expect(res.expr == .unary);
+        try expect(res.expr.unary.operator == .bang);
+        try expect(res.expr.unary.right == .literal);
+        try expect(res.expr.unary.right.literal.type == .true);
+    }
+    {
+        const res = try parse.parse(allocator, tokens[2..]);
+        defer res.expr.destroy(allocator);
+
+        try expect(res.expr == .unary);
+        try expect(res.expr.unary.operator == .minus);
+        try expect(res.expr.unary.right == .literal);
+        try expect(res.expr.unary.right.literal.type == .number);
+        try expect(res.expr.unary.right.literal.value.?.number == 26.13);
+    }
+}
