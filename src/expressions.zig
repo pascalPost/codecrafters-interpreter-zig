@@ -23,7 +23,8 @@ const Operator = enum(u2) {
     }
 };
 
-const Tag = enum(u2) { binary, grouping, literal, unary };
+pub const Tag = enum(u2) { binary, grouping, literal, unary };
+
 pub const Expr = union(Tag) {
     binary: *Binary,
     grouping: *Grouping,
