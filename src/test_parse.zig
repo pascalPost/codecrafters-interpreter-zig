@@ -122,3 +122,20 @@ test "unary operators" {
         try expect(res.expr.unary.right.literal.value.?.number == 26.13);
     }
 }
+
+test "arithmetic operators (factor - multiplication & division)" {
+   const allocator = std.testing.allocator;
+
+    const tokens = [_]Token{
+        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
+        Token.init(.STAR, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 38 }),
+        Token.init(.SLASH, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 58 }),
+    };
+
+    const res = try parse.parse(allocator, tokens[2..]);
+    defer res.expr.destroy(allocator);
+
+    try expect(res.expr == .binary);
+}

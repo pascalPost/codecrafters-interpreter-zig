@@ -2,6 +2,7 @@
 //! The parser is a recursive descent parser.
 //! The abstract syntax tree is a tree of expressions defined in the expressions module.
 //! Used grammer:
+//!    factor  = unary ( ( "*" | "/" ) unary )* ;
 //!    unary   = ( "!" | "-" ) unary | primary ;
 //!    primary = "false" | "true" | "nil" | NUMBER | STRING | "(" expression ")" ;
 
@@ -26,6 +27,16 @@ const Result = struct {
 fn create_unary(allocator: std.mem.Allocator, tokens: []const scan.Token, op: Operator) std.mem.Allocator.Error!Result {
     const right = try parse(allocator, tokens[1..]);
     return Result.init(.{ .unary = try Unary.create(allocator, op, right.expr) }, right.tokens);
+}
+
+fn factor(allocator: std.mem.Allocator, tokens_in: []const scan.Token) std.mem.Allocator.Error!Result {
+   std.debug.assert(tokens_in.len > 0);
+    const res = try unary(allocator, tokens_in);
+
+    var tokens = res.tokens;
+    std.debug.assert(tokens.len > 0);
+
+    // while ()
 }
 
 /// Parse a unary expression: ( "!" | "-" ) unary | primary ;
