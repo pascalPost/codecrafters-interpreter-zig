@@ -80,10 +80,10 @@ const Binary = struct {
     }
 };
 
-const Grouping = struct {
+pub const Grouping = struct {
     expr: Expr,
 
-    fn create(allocator: std.mem.Allocator, expr: Expr) !*Grouping {
+    pub fn create(allocator: std.mem.Allocator, expr: Expr) !*Grouping {
         const grouping = try allocator.create(Grouping);
         grouping.expr = expr;
         return grouping;

@@ -14,6 +14,7 @@
   <component name="ChangeListManager">
     <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/expressions.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/expressions.zig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/parse.zig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test_parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/test_parse.zig" afterDir="false" />
     </list>
@@ -28,9 +29,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2lPcJ4CPakrptBtVenpJIyt75Vu" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -52,6 +53,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -82,11 +84,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1725085076461</updated>
-      <workItem from="1725085077459" duration="3829000" />
+      <workItem from="1725085077459" duration="4824000" />
+      <workItem from="1725091134870" duration="4469000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

@@ -44,8 +44,8 @@ pub fn main() !void {
     }
 
     if (parse) {
-        const expr = try parser.parse(allocator, scanner.tokens.items);
-        defer expr.destroy(allocator);
-        try std.io.getStdOut().writer().print("{}", .{expr});
+        const res = try parser.parse(allocator, scanner.tokens.items);
+        defer res.expr.destroy(allocator);
+        try std.io.getStdOut().writer().print("{}", .{res.expr});
     }
 }
