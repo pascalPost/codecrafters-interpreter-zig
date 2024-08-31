@@ -16,9 +16,4 @@ fn primary(allocator: std.mem.Allocator, tokens: []scan.Token) !Expr {
 
 pub fn parse(allocator: std.mem.Allocator, tokens: []scan.Token) !Expr {
     return primary(allocator, tokens);
-    // var i = 0;
-    // const len = tokens.len;
-    // while (i < len) {
-    //     primary(tokens);
-    // }
 }
