@@ -14,6 +14,7 @@ const Literal = ast.Literal;
 const Grouping = ast.Grouping;
 const Unary = ast.Unary;
 const Operator = ast.Operator;
+const Binary = ast.Binary;
 
 const Result = struct {
     expr: Expr,
@@ -25,18 +26,30 @@ const Result = struct {
 };
 
 fn create_unary(allocator: std.mem.Allocator, tokens: []const scan.Token, op: Operator) std.mem.Allocator.Error!Result {
-    const right = try parse(allocator, tokens[1..]);
+    const right = try unary(allocator, tokens[1..]);
     return Result.init(.{ .unary = try Unary.create(allocator, op, right.expr) }, right.tokens);
 }
 
-fn factor(allocator: std.mem.Allocator, tokens_in: []const scan.Token) std.mem.Allocator.Error!Result {
-   std.debug.assert(tokens_in.len > 0);
-    const res = try unary(allocator, tokens_in);
+fn create_factor(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator) std.mem.Allocator.Error!Result {
+    // we use tokens[1..] to account for operator (tokens[0])
+    std.debug.assert(tokens.len > 1);
+    const right = try unary(allocator, tokens[1..]);
+    return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
+}
 
-    var tokens = res.tokens;
+fn factor(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
     std.debug.assert(tokens.len > 0);
+    var res = try unary(allocator, tokens);
 
-    // while ()
+    while (res.tokens.len > 0) {
+        switch (res.tokens[0].type) {
+            .SLASH => res = try create_factor(allocator, res.tokens, res.expr, .slash),
+            .STAR => res = try create_factor(allocator, res.tokens, res.expr, .star),
+            else => break,
+        }
+    }
+
+    return res;
 }
 
 /// Parse a unary expression: ( "!" | "-" ) unary | primary ;
@@ -73,5 +86,5 @@ fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.All
 }
 
 pub fn parse(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
-    return unary(allocator, tokens);
+    return factor(allocator, tokens);
 }

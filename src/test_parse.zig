@@ -124,7 +124,7 @@ test "unary operators" {
 }
 
 test "arithmetic operators (factor - multiplication & division)" {
-   const allocator = std.testing.allocator;
+    const allocator = std.testing.allocator;
 
     const tokens = [_]Token{
         Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
@@ -134,8 +134,66 @@ test "arithmetic operators (factor - multiplication & division)" {
         Token.init(.NUMBER, 0, 1, .{ .number = 58 }),
     };
 
-    const res = try parse.parse(allocator, tokens[2..]);
+    const res = try parse.parse(allocator, tokens[0..]);
     defer res.expr.destroy(allocator);
 
     try expect(res.expr == .binary);
+    try expect(res.expr.binary.operator == .slash);
+    try expect(res.expr.binary.left == .binary);
+    try expect(res.expr.binary.left.binary.operator == .star);
+    try expect(res.expr.binary.left.binary.left == .literal);
+    try expect(res.expr.binary.left.binary.left.literal.type == .number);
+    try expect(res.expr.binary.left.binary.left.literal.value.?.number == 16);
+    try expect(res.expr.binary.left.binary.right == .literal);
+    try expect(res.expr.binary.left.binary.right.literal.type == .number);
+    try expect(res.expr.binary.left.binary.right.literal.value.?.number == 38);
+    try expect(res.expr.binary.right == .literal);
+    try expect(res.expr.binary.right.literal.type == .number);
+    try expect(res.expr.binary.right.literal.value.?.number == 58);
+}
+
+test "arithmetic operators (complex factor)" {
+    const allocator = std.testing.allocator;
+
+    // (86 * -97 / (12 * 93))
+    const tokens = [_]Token{
+        Token.init(.LEFT_PAREN, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 86 }),
+        Token.init(.STAR, 0, 1, null),
+        Token.init(.MINUS, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 97 }),
+        Token.init(.SLASH, 0, 1, null),
+        Token.init(.LEFT_PAREN, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 12 }),
+        Token.init(.STAR, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 93 }),
+        Token.init(.RIGHT_PAREN, 0, 1, null),
+        Token.init(.RIGHT_PAREN, 0, 1, null),
+    };
+
+    const res = try parse.parse(allocator, tokens[0..]);
+    defer res.expr.destroy(allocator);
+
+    try expect(res.expr == .grouping);
+    try expect(res.expr.grouping.expr == .binary);
+    try expect(res.expr.grouping.expr.binary.operator == .slash);
+    try expect(res.expr.grouping.expr.binary.left == .binary);
+    try expect(res.expr.grouping.expr.binary.left.binary.operator == .star);
+    try expect(res.expr.grouping.expr.binary.left.binary.left == .literal);
+    try expect(res.expr.grouping.expr.binary.left.binary.left.literal.type == .number);
+    try expect(res.expr.grouping.expr.binary.left.binary.left.literal.value.?.number == 86);
+    try expect(res.expr.grouping.expr.binary.left.binary.right == .unary);
+    try expect(res.expr.grouping.expr.binary.left.binary.right.unary.operator == .minus);
+    try expect(res.expr.grouping.expr.binary.left.binary.right.unary.right == .literal);
+    try expect(res.expr.grouping.expr.binary.left.binary.right.unary.right.literal.type == .number);
+    try expect(res.expr.grouping.expr.binary.left.binary.right.unary.right.literal.value.?.number == 97);
+    try expect(res.expr.grouping.expr.binary.right == .grouping);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr == .binary);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.operator == .star);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.left == .literal);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.left.literal.type == .number);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.left.literal.value.?.number == 12);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.right == .literal);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.right.literal.type == .number);
+    try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.right.literal.value.?.number == 93);
 }
