@@ -230,3 +230,32 @@ test "arithmetic operators (plus & minus)" {
     try expect(res.expr.binary.right.literal.type == .number);
     try expect(res.expr.binary.right.literal.value.?.number == 58);
 }
+
+test "comparison operators" {
+    const allocator = std.testing.allocator;
+
+    const tokens = [_]Token{
+        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
+        Token.init(.GREATER, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 38 }),
+        Token.init(.LESS, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 58 }),
+    };
+
+    const res = try parse.parse(allocator, tokens[0..]);
+    defer res.expr.destroy(allocator);
+
+    try expect(res.expr == .binary);
+    try expect(res.expr.binary.operator == .less);
+    try expect(res.expr.binary.left == .binary);
+    try expect(res.expr.binary.left.binary.operator == .greater);
+    try expect(res.expr.binary.left.binary.left == .literal);
+    try expect(res.expr.binary.left.binary.left.literal.type == .number);
+    try expect(res.expr.binary.left.binary.left.literal.value.?.number == 16);
+    try expect(res.expr.binary.left.binary.right == .literal);
+    try expect(res.expr.binary.left.binary.right.literal.type == .number);
+    try expect(res.expr.binary.left.binary.right.literal.value.?.number == 38);
+    try expect(res.expr.binary.right == .literal);
+    try expect(res.expr.binary.right.literal.type == .number);
+    try expect(res.expr.binary.right.literal.value.?.number == 58);
+}

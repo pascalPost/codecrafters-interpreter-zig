@@ -2,12 +2,16 @@ const std = @import("std");
 const Token = @import("scan.zig").Token;
 const LiteralStorage = @import("scan.zig").LiteralStorage;
 
-pub const Operator = enum(u3) {
+pub const Operator = enum(u4) {
     bang,
     minus,
     plus,
     slash,
     star,
+    greater,
+    greater_equal,
+    less,
+    less_equal,
 
     pub fn format(self: Operator, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
         _ = fmt;
@@ -19,6 +23,10 @@ pub const Operator = enum(u3) {
             .plus => "+",
             .slash => "/",
             .star => "*",
+            .greater => ">",
+            .greater_equal => ">=",
+            .less => "<",
+            .less_equal => "<=",
         };
 
         try writer.print("{s}", .{str});

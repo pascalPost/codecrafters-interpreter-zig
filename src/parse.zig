@@ -44,6 +44,32 @@ fn create_term(allocator: std.mem.Allocator, tokens: []const scan.Token, left: E
     return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
 }
 
+fn create_comparison(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator) std.mem.Allocator.Error!Result {
+    // we use tokens[1..] to account for operator (tokens[0])
+    std.debug.assert(tokens.len > 1);
+    const right = try term(allocator, tokens[1..]);
+    return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
+}
+
+// merge create_factor, create_term and create_comparison into a single function
+
+fn comparison(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+    std.debug.assert(tokens.len > 0);
+    var res = try term(allocator, tokens);
+
+    while (res.tokens.len > 0) {
+        switch (res.tokens[0].type) {
+            .GREATER => res = try create_term(allocator, res.tokens, res.expr, .greater),
+            .GREATER_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .greater_equal),
+            .LESS => res = try create_term(allocator, res.tokens, res.expr, .less),
+            .LESS_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .less_equal),
+            else => break,
+        }
+    }
+
+    return res;
+}
+
 fn term(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
     std.debug.assert(tokens.len > 0);
     var res = try factor(allocator, tokens);
@@ -108,5 +134,5 @@ fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.All
 }
 
 pub fn parse(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
-    return term(allocator, tokens);
+    return comparison(allocator, tokens);
 }
