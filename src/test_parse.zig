@@ -92,35 +92,39 @@ test "parentheses (double)" {
     try expect(res.expr.grouping.expr.grouping.expr.literal.value.?.number == 26.13);
 }
 
-test "unary operators" {
+test "unary operators (negation operator)" {
     const allocator = std.testing.allocator;
 
     const tokens = [_]Token{
         Token.init(.BANG, 0, 1, null),
         Token.init(.TRUE, 0, 1, null),
+    };
+
+    const res = try parse.parse(allocator, &tokens);
+    defer res.expr.destroy(allocator);
+
+    try expect(res.expr == .unary);
+    try expect(res.expr.unary.operator == .bang);
+    try expect(res.expr.unary.right == .literal);
+    try expect(res.expr.unary.right.literal.type == .true);
+}
+
+test "unary operators (negative number)" {
+    const allocator = std.testing.allocator;
+
+    const tokens = [_]Token{
         Token.init(.MINUS, 0, 1, null),
         Token.init(.NUMBER, 0, 1, .{ .number = 26.13 }),
     };
 
-    {
-        const res = try parse.parse(allocator, &tokens);
-        defer res.expr.destroy(allocator);
+    const res = try parse.parse(allocator, tokens[0..]);
+    defer res.expr.destroy(allocator);
 
-        try expect(res.expr == .unary);
-        try expect(res.expr.unary.operator == .bang);
-        try expect(res.expr.unary.right == .literal);
-        try expect(res.expr.unary.right.literal.type == .true);
-    }
-    {
-        const res = try parse.parse(allocator, tokens[2..]);
-        defer res.expr.destroy(allocator);
-
-        try expect(res.expr == .unary);
-        try expect(res.expr.unary.operator == .minus);
-        try expect(res.expr.unary.right == .literal);
-        try expect(res.expr.unary.right.literal.type == .number);
-        try expect(res.expr.unary.right.literal.value.?.number == 26.13);
-    }
+    try expect(res.expr == .unary);
+    try expect(res.expr.unary.operator == .minus);
+    try expect(res.expr.unary.right == .literal);
+    try expect(res.expr.unary.right.literal.type == .number);
+    try expect(res.expr.unary.right.literal.value.?.number == 26.13);
 }
 
 test "arithmetic operators (factor - multiplication & division)" {
@@ -196,4 +200,33 @@ test "arithmetic operators (complex factor)" {
     try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.right == .literal);
     try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.right.literal.type == .number);
     try expect(res.expr.grouping.expr.binary.right.grouping.expr.binary.right.literal.value.?.number == 93);
+}
+
+test "arithmetic operators (plus & minus)" {
+    const allocator = std.testing.allocator;
+
+    const tokens = [_]Token{
+        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
+        Token.init(.PLUS, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 38 }),
+        Token.init(.MINUS, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 58 }),
+    };
+
+    const res = try parse.parse(allocator, tokens[0..]);
+    defer res.expr.destroy(allocator);
+
+    try expect(res.expr == .binary);
+    try expect(res.expr.binary.operator == .minus);
+    try expect(res.expr.binary.left == .binary);
+    try expect(res.expr.binary.left.binary.operator == .plus);
+    try expect(res.expr.binary.left.binary.left == .literal);
+    try expect(res.expr.binary.left.binary.left.literal.type == .number);
+    try expect(res.expr.binary.left.binary.left.literal.value.?.number == 16);
+    try expect(res.expr.binary.left.binary.right == .literal);
+    try expect(res.expr.binary.left.binary.right.literal.type == .number);
+    try expect(res.expr.binary.left.binary.right.literal.value.?.number == 38);
+    try expect(res.expr.binary.right == .literal);
+    try expect(res.expr.binary.right.literal.type == .number);
+    try expect(res.expr.binary.right.literal.value.?.number == 58);
 }

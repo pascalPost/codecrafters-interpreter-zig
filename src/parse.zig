@@ -37,6 +37,28 @@ fn create_factor(allocator: std.mem.Allocator, tokens: []const scan.Token, left:
     return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
 }
 
+fn create_term(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator) std.mem.Allocator.Error!Result {
+    // we use tokens[1..] to account for operator (tokens[0])
+    std.debug.assert(tokens.len > 1);
+    const right = try factor(allocator, tokens[1..]);
+    return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
+}
+
+fn term(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+    std.debug.assert(tokens.len > 0);
+    var res = try factor(allocator, tokens);
+
+    while (res.tokens.len > 0) {
+        switch (res.tokens[0].type) {
+            .MINUS => res = try create_term(allocator, res.tokens, res.expr, .minus),
+            .PLUS => res = try create_term(allocator, res.tokens, res.expr, .plus),
+            else => break,
+        }
+    }
+
+    return res;
+}
+
 fn factor(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
     std.debug.assert(tokens.len > 0);
     var res = try unary(allocator, tokens);
@@ -86,5 +108,5 @@ fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.All
 }
 
 pub fn parse(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
-    return factor(allocator, tokens);
+    return term(allocator, tokens);
 }
