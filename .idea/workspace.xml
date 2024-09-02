@@ -13,8 +13,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/expressions.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/expressions.zig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/parse.zig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test_parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/test_parse.zig" afterDir="false" />
     </list>
@@ -92,7 +90,7 @@
       <workItem from="1725136065302" duration="3789000" />
       <workItem from="1725201424305" duration="9647000" />
       <workItem from="1725290640687" duration="1512000" />
-      <workItem from="1725292162566" duration="674000" />
+      <workItem from="1725292162566" duration="1018000" />
     </task>
     <servers />
   </component>

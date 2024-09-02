@@ -259,3 +259,25 @@ test "comparison operators" {
     try expect(res.expr.binary.right.literal.type == .number);
     try expect(res.expr.binary.right.literal.value.?.number == 58);
 }
+
+test "equality" {
+    const allocator = std.testing.allocator;
+
+    const tokens = [_]Token{
+        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
+        Token.init(.EQUAL_EQUAL, 0, 1, null),
+        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
+    };
+
+    const res = try parse.parse(allocator, tokens[0..]);
+    defer res.expr.destroy(allocator);
+
+    try expect(res.expr == .binary);
+    try expect(res.expr.binary.operator == .equal_equal);
+    try expect(res.expr.binary.left == .literal);
+    try expect(res.expr.binary.left.literal.type == .number);
+    try expect(res.expr.binary.left.literal.value.?.number == 16);
+    try expect(res.expr.binary.right == .literal);
+    try expect(res.expr.binary.right.literal.type == .number);
+    try expect(res.expr.binary.right.literal.value.?.number == 16);
+}

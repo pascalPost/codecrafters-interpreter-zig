@@ -12,6 +12,8 @@ pub const Operator = enum(u4) {
     greater_equal,
     less,
     less_equal,
+    bang_equal,
+    equal_equal,
 
     pub fn format(self: Operator, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
         _ = fmt;
@@ -27,6 +29,8 @@ pub const Operator = enum(u4) {
             .greater_equal => ">=",
             .less => "<",
             .less_equal => "<=",
+            .bang_equal => "!=",
+            .equal_equal => "==",
         };
 
         try writer.print("{s}", .{str});
