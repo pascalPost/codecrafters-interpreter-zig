@@ -12,10 +12,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/evaluate.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/evaluate.zig" afterDir="false" />
-    </list>
+    <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,6 +32,18 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file:///usr/lib/zig/std/testing.zig" root0="FORCE_HIGHLIGHTING" />
@@ -129,7 +138,7 @@
       <workItem from="1725290640687" duration="1512000" />
       <workItem from="1725292162566" duration="1402000" />
       <workItem from="1725306163304" duration="5305000" />
-      <workItem from="1725374875521" duration="9327000" />
+      <workItem from="1725374875521" duration="10245000" />
     </task>
     <servers />
   </component>

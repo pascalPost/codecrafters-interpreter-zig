@@ -40,8 +40,8 @@ const expect = std.testing.expect;
 
 pub fn eval(expr: Expr) ?Result {
     switch (expr) {
-        .literal => {
-            switch (expr.literal.type) {
+        .literal => |l| {
+            switch (l.type) {
                 .false => return .{ .bool = false },
                 .true => return .{ .bool = true },
                 .nil => return null,
@@ -49,6 +49,7 @@ pub fn eval(expr: Expr) ?Result {
                 .string => return .{ .string = expr.literal.value.?.string },
             }
         },
+        .grouping => |c| return eval(c.expr),
         else => unreachable,
     }
 }
@@ -93,4 +94,12 @@ test "literals: string" {
     defer expr.destroy(allocator);
     const res = eval(expr);
     try expect(std.mem.eql(u8, res.?.string, "test"));
+}
+
+test "parentheses" {
+    const allocator = std.testing.allocator;
+    const expr = Expr{ .grouping = try Grouping.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }) };
+    defer expr.destroy(allocator);
+    const res = eval(expr);
+    try expect(res.?.number == 42);
 }
