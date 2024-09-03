@@ -16,7 +16,7 @@ test "empty file" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 1);
-    try expect(eql(scanner.tokens.items[0], Token.init(.EOF, 0, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.EOF, 0, 0, 1, null)));
 }
 
 test "parentheses" {
@@ -31,10 +31,10 @@ test "parentheses" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 4);
-    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_PAREN, 1, 1, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.RIGHT_PAREN, 2, 1, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 3, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_PAREN, 1, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.RIGHT_PAREN, 2, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 3, 0, 1, null)));
 }
 
 test "braces" {
@@ -49,11 +49,11 @@ test "braces" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 5);
-    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_BRACE, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_BRACE, 1, 1, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.RIGHT_BRACE, 2, 1, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.RIGHT_BRACE, 3, 1, null)));
-    try expect(eql(scanner.tokens.items[4], Token.init(.EOF, 4, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_BRACE, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_BRACE, 1, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.RIGHT_BRACE, 2, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.RIGHT_BRACE, 3, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[4], Token.init(.EOF, 4, 0, 1, null)));
 }
 
 test "single-character tokens" {
@@ -68,17 +68,17 @@ test "single-character tokens" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 11);
-    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_BRACE, 1, 1, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.STAR, 2, 1, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.DOT, 3, 1, null)));
-    try expect(eql(scanner.tokens.items[4], Token.init(.COMMA, 4, 1, null)));
-    try expect(eql(scanner.tokens.items[5], Token.init(.PLUS, 5, 1, null)));
-    try expect(eql(scanner.tokens.items[6], Token.init(.MINUS, 6, 1, null)));
-    try expect(eql(scanner.tokens.items[7], Token.init(.SEMICOLON, 7, 1, null)));
-    try expect(eql(scanner.tokens.items[8], Token.init(.RIGHT_BRACE, 8, 1, null)));
-    try expect(eql(scanner.tokens.items[9], Token.init(.RIGHT_PAREN, 9, 1, null)));
-    try expect(eql(scanner.tokens.items[10], Token.init(.EOF, 10, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_BRACE, 1, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.STAR, 2, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.DOT, 3, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[4], Token.init(.COMMA, 4, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[5], Token.init(.PLUS, 5, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[6], Token.init(.MINUS, 6, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[7], Token.init(.SEMICOLON, 7, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[8], Token.init(.RIGHT_BRACE, 8, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[9], Token.init(.RIGHT_PAREN, 9, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[10], Token.init(.EOF, 10, 0, 1, null)));
 }
 
 test "lexical errors" {
@@ -91,10 +91,10 @@ test "lexical errors" {
     defer scanner.deinit();
 
     try expect(scanner.tokens.items.len == 4);
-    try expect(eql(scanner.tokens.items[0], Token.init(.COMMA, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.DOT, 1, 1, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.LEFT_PAREN, 3, 1, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 5, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.COMMA, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.DOT, 1, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.LEFT_PAREN, 3, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 5, 0, 1, null)));
 
     try expect(scanner.errors == 2);
     const errorMsg = "[line 1] Error: Unexpected character: $\n[line 1] Error: Unexpected character: #\n";
@@ -113,12 +113,12 @@ test "assignment & equality operators" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 6);
-    try expect(eql(scanner.tokens.items[0], Token.init(.EQUAL, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_BRACE, 1, 1, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.EQUAL_EQUAL, 2, 2, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.EQUAL, 4, 1, null)));
-    try expect(eql(scanner.tokens.items[4], Token.init(.RIGHT_BRACE, 5, 1, null)));
-    try expect(eql(scanner.tokens.items[5], Token.init(.EOF, 6, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.EQUAL, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.LEFT_BRACE, 1, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.EQUAL_EQUAL, 2, 2, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EQUAL, 4, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[4], Token.init(.RIGHT_BRACE, 5, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[5], Token.init(.EOF, 6, 0, 1, null)));
 }
 
 test "negation & inequality operators" {
@@ -133,10 +133,10 @@ test "negation & inequality operators" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 4);
-    try expect(eql(scanner.tokens.items[0], Token.init(.BANG, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.BANG_EQUAL, 1, 2, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.EQUAL_EQUAL, 3, 2, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 5, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.BANG, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.BANG_EQUAL, 1, 2, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.EQUAL_EQUAL, 3, 2, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 5, 0, 1, null)));
 }
 
 test "relational operators" {
@@ -151,11 +151,11 @@ test "relational operators" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 5);
-    try expect(eql(scanner.tokens.items[0], Token.init(.LESS, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.LESS_EQUAL, 1, 2, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.GREATER, 3, 1, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.GREATER_EQUAL, 4, 2, null)));
-    try expect(eql(scanner.tokens.items[4], Token.init(.EOF, 6, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.LESS, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.LESS_EQUAL, 1, 2, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.GREATER, 3, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.GREATER_EQUAL, 4, 2, 1, null)));
+    try expect(eql(scanner.tokens.items[4], Token.init(.EOF, 6, 0, 1, null)));
 }
 
 test "comment" {
@@ -170,7 +170,7 @@ test "comment" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 1);
-    try expect(eql(scanner.tokens.items[0], Token.init(.EOF, 10, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.EOF, 10, 0, 2, null)));
 }
 
 test "division operator & comments" {
@@ -185,8 +185,8 @@ test "division operator & comments" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.SLASH, 12, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 13, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.SLASH, 12, 1, 2, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 13, 0, 2, null)));
 }
 
 test "whitespace" {
@@ -201,9 +201,9 @@ test "whitespace" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 3);
-    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 0, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.RIGHT_PAREN, 4, 1, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.EOF, 5, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 0, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.RIGHT_PAREN, 4, 1, 2, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.EOF, 5, 0, 2, null)));
 }
 
 test "multi-line errors" {
@@ -216,9 +216,9 @@ test "multi-line errors" {
     defer scanner.deinit();
 
     try expect(scanner.tokens.items.len == 3);
-    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 2, 1, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.RIGHT_PAREN, 4, 1, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.EOF, 7, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.LEFT_PAREN, 2, 1, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.RIGHT_PAREN, 4, 1, 2, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.EOF, 7, 0, 2, null)));
 
     try expect(scanner.errors == 2);
     const errorMsg = "[line 1] Error: Unexpected character: #\n[line 2] Error: Unexpected character: @\n";
@@ -237,8 +237,8 @@ test "string literal" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 9, .{ .string = "foo baz" })));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 9, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 9, 1, .{ .string = "foo baz" })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 9, 0, 1, null)));
 }
 
 test "string literal (empty string)" {
@@ -253,8 +253,8 @@ test "string literal (empty string)" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 2, .{ .string = "" })));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 2, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.STRING, 0, 2, 1, .{ .string = "" })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 2, 0, 1, null)));
 }
 
 test "unterminated string" {
@@ -267,7 +267,7 @@ test "unterminated string" {
     defer scanner.deinit();
 
     try expect(scanner.tokens.items.len == 1);
-    try expect(eql(scanner.tokens.items[0], Token.init(.EOF, 4, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.EOF, 4, 0, 1, null)));
 
     try expect(scanner.errors == 1);
     const errorMsg = "[line 1] Error: Unterminated string.\n";
@@ -286,8 +286,8 @@ test "number literal (single digit)" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 1, .{ .number = 4 })));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 1, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 1, 1, .{ .number = 4 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 1, 0, 1, null)));
 }
 
 test "number literal (two digits)" {
@@ -302,8 +302,8 @@ test "number literal (two digits)" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 2, .{ .number = 42 })));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 2, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 2, 1, .{ .number = 42 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 2, 0, 1, null)));
 }
 
 test "number literal (float)" {
@@ -318,8 +318,8 @@ test "number literal (float)" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 4, .{ .number = 42.0 })));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 4, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 4, 1, .{ .number = 42.0 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 4, 0, 1, null)));
 }
 
 test "number literal (float with trailing dot)" {
@@ -334,8 +334,8 @@ test "number literal (float with trailing dot)" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 3, .{ .number = 42.0 })));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 3, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 3, 1, .{ .number = 42.0 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 3, 0, 1, null)));
 }
 
 test "number literals" {
@@ -350,10 +350,10 @@ test "number literals" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 4);
-    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 2, .{ .number = 42 })));
-    try expect(eql(scanner.tokens.items[1], Token.init(.NUMBER, 3, 4, .{ .number = 43.0 })));
-    try expect(eql(scanner.tokens.items[2], Token.init(.NUMBER, 8, 3, .{ .number = 44.0 })));
-    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 11, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.NUMBER, 0, 2, 1, .{ .number = 42 })));
+    try expect(eql(scanner.tokens.items[1], Token.init(.NUMBER, 3, 4, 1, .{ .number = 43.0 })));
+    try expect(eql(scanner.tokens.items[2], Token.init(.NUMBER, 8, 3, 1, .{ .number = 44.0 })));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 11, 0, 1, null)));
 }
 
 test "identifiers" {
@@ -368,10 +368,10 @@ test "identifiers" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 4);
-    try expect(eql(scanner.tokens.items[0], Token.init(.IDENTIFIER, 0, 3, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.IDENTIFIER, 4, 3, null)));
-    try expect(eql(scanner.tokens.items[2], Token.init(.IDENTIFIER, 8, 6, null)));
-    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 14, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.IDENTIFIER, 0, 3, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.IDENTIFIER, 4, 3, 1, null)));
+    try expect(eql(scanner.tokens.items[2], Token.init(.IDENTIFIER, 8, 6, 1, null)));
+    try expect(eql(scanner.tokens.items[3], Token.init(.EOF, 14, 0, 1, null)));
 }
 
 test "reserved words" {
@@ -386,6 +386,6 @@ test "reserved words" {
     try expect(errOut.items.len == 0); // no error output
     try expect(scanner.errors == 0);
     try expect(scanner.tokens.items.len == 2);
-    try expect(eql(scanner.tokens.items[0], Token.init(.AND, 0, 3, null)));
-    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 3, 0, null)));
+    try expect(eql(scanner.tokens.items[0], Token.init(.AND, 0, 3, 1, null)));
+    try expect(eql(scanner.tokens.items[1], Token.init(.EOF, 3, 0, 1, null)));
 }

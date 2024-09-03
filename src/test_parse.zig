@@ -7,26 +7,32 @@ const Token = scan.Token;
 test "booleans & nil" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     {
-        const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.TRUE, 0, 1, null)});
+        const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.TRUE, 0, 1, 1, null)}, errOut.writer());
         defer res.expr.destroy(allocator);
 
+        try expect(errOut.items.len == 0); // no error output
         try expect(res.expr == .literal);
         try expect(res.expr.literal.type == .true);
         try expect(res.expr.literal.value == null);
     }
     {
-        const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.FALSE, 0, 1, null)});
+        const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.FALSE, 0, 1, 1, null)}, errOut.writer());
         defer res.expr.destroy(allocator);
 
+        try expect(errOut.items.len == 0); // no error output
         try expect(res.expr == .literal);
         try expect(res.expr.literal.type == .false);
         try expect(res.expr.literal.value == null);
     }
     {
-        const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.NIL, 0, 1, null)});
+        const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.NIL, 0, 1, 1, null)}, errOut.writer());
         defer res.expr.destroy(allocator);
 
+        try expect(errOut.items.len == 0); // no error output
         try expect(res.expr == .literal);
         try expect(res.expr.literal.type == .nil);
         try expect(res.expr.literal.value == null);
@@ -35,9 +41,14 @@ test "booleans & nil" {
 
 test "number literals" {
     const allocator = std.testing.allocator;
-    const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.NUMBER, 0, 1, .{ .number = 35 })});
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const res = try parse.parse(allocator, &[_]scan.Token{scan.Token.init(.NUMBER, 0, 1, 1, .{ .number = 35 })}, errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .literal);
     try expect(res.expr.literal.type == .number);
     try expect(res.expr.literal.value.?.number == 35);
@@ -45,9 +56,14 @@ test "number literals" {
 
 test "string literals" {
     const allocator = std.testing.allocator;
-    const res = try parse.parse(allocator, &[_]scan.Token{Token.init(.STRING, 0, 1, .{ .string = "test" })});
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const res = try parse.parse(allocator, &[_]scan.Token{Token.init(.STRING, 0, 1, 1, .{ .string = "test" })}, errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .literal);
     try expect(res.expr.literal.type == .string);
     try expect(std.mem.eql(u8, res.expr.literal.value.?.string, "test"));
@@ -56,15 +72,19 @@ test "string literals" {
 test "parentheses" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.LEFT_PAREN, 0, 1, null),
-        Token.init(.STRING, 0, 1, .{ .string = "test" }),
-        Token.init(.RIGHT_PAREN, 0, 1, null),
+        Token.init(.LEFT_PAREN, 0, 1, 1, null),
+        Token.init(.STRING, 0, 1, 1, .{ .string = "test" }),
+        Token.init(.RIGHT_PAREN, 0, 1, 1, null),
     };
 
-    const res = try parse.parse(allocator, &tokens);
+    const res = try parse.parse(allocator, &tokens, errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .grouping);
     try expect(res.expr.grouping.expr == .literal);
     try expect(res.expr.grouping.expr.literal.type == .string);
@@ -74,17 +94,21 @@ test "parentheses" {
 test "parentheses (double)" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.LEFT_PAREN, 0, 1, null),
-        Token.init(.LEFT_PAREN, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 26.13 }),
-        Token.init(.RIGHT_PAREN, 0, 1, null),
-        Token.init(.RIGHT_PAREN, 0, 1, null),
+        Token.init(.LEFT_PAREN, 0, 1, 1, null),
+        Token.init(.LEFT_PAREN, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 26.13 }),
+        Token.init(.RIGHT_PAREN, 0, 1, 1, null),
+        Token.init(.RIGHT_PAREN, 0, 1, 1, null),
     };
 
-    const res = try parse.parse(allocator, &tokens);
+    const res = try parse.parse(allocator, &tokens, errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .grouping);
     try expect(res.expr.grouping.expr == .grouping);
     try expect(res.expr.grouping.expr.grouping.expr == .literal);
@@ -95,14 +119,18 @@ test "parentheses (double)" {
 test "unary operators (negation operator)" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.BANG, 0, 1, null),
-        Token.init(.TRUE, 0, 1, null),
+        Token.init(.BANG, 0, 1, 1, null),
+        Token.init(.TRUE, 0, 1, 1, null),
     };
 
-    const res = try parse.parse(allocator, &tokens);
+    const res = try parse.parse(allocator, &tokens, errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .unary);
     try expect(res.expr.unary.operator == .bang);
     try expect(res.expr.unary.right == .literal);
@@ -112,14 +140,18 @@ test "unary operators (negation operator)" {
 test "unary operators (negative number)" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.MINUS, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 26.13 }),
+        Token.init(.MINUS, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 26.13 }),
     };
 
-    const res = try parse.parse(allocator, tokens[0..]);
+    const res = try parse.parse(allocator, tokens[0..], errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .unary);
     try expect(res.expr.unary.operator == .minus);
     try expect(res.expr.unary.right == .literal);
@@ -130,17 +162,21 @@ test "unary operators (negative number)" {
 test "arithmetic operators (factor - multiplication & division)" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
-        Token.init(.STAR, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 38 }),
-        Token.init(.SLASH, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 58 }),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 16 }),
+        Token.init(.STAR, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 38 }),
+        Token.init(.SLASH, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 58 }),
     };
 
-    const res = try parse.parse(allocator, tokens[0..]);
+    const res = try parse.parse(allocator, tokens[0..], errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .binary);
     try expect(res.expr.binary.operator == .slash);
     try expect(res.expr.binary.left == .binary);
@@ -159,25 +195,29 @@ test "arithmetic operators (factor - multiplication & division)" {
 test "arithmetic operators (complex factor)" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     // (86 * -97 / (12 * 93))
     const tokens = [_]Token{
-        Token.init(.LEFT_PAREN, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 86 }),
-        Token.init(.STAR, 0, 1, null),
-        Token.init(.MINUS, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 97 }),
-        Token.init(.SLASH, 0, 1, null),
-        Token.init(.LEFT_PAREN, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 12 }),
-        Token.init(.STAR, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 93 }),
-        Token.init(.RIGHT_PAREN, 0, 1, null),
-        Token.init(.RIGHT_PAREN, 0, 1, null),
+        Token.init(.LEFT_PAREN, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 86 }),
+        Token.init(.STAR, 0, 1, 1, null),
+        Token.init(.MINUS, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 97 }),
+        Token.init(.SLASH, 0, 1, 1, null),
+        Token.init(.LEFT_PAREN, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 12 }),
+        Token.init(.STAR, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 93 }),
+        Token.init(.RIGHT_PAREN, 0, 1, 1, null),
+        Token.init(.RIGHT_PAREN, 0, 1, 1, null),
     };
 
-    const res = try parse.parse(allocator, tokens[0..]);
+    const res = try parse.parse(allocator, tokens[0..], errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .grouping);
     try expect(res.expr.grouping.expr == .binary);
     try expect(res.expr.grouping.expr.binary.operator == .slash);
@@ -205,17 +245,21 @@ test "arithmetic operators (complex factor)" {
 test "arithmetic operators (plus & minus)" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
-        Token.init(.PLUS, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 38 }),
-        Token.init(.MINUS, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 58 }),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 16 }),
+        Token.init(.PLUS, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 38 }),
+        Token.init(.MINUS, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 58 }),
     };
 
-    const res = try parse.parse(allocator, tokens[0..]);
+    const res = try parse.parse(allocator, tokens[0..], errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .binary);
     try expect(res.expr.binary.operator == .minus);
     try expect(res.expr.binary.left == .binary);
@@ -234,17 +278,21 @@ test "arithmetic operators (plus & minus)" {
 test "comparison operators" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
-        Token.init(.GREATER, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 38 }),
-        Token.init(.LESS, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 58 }),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 16 }),
+        Token.init(.GREATER, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 38 }),
+        Token.init(.LESS, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 58 }),
     };
 
-    const res = try parse.parse(allocator, tokens[0..]);
+    const res = try parse.parse(allocator, tokens[0..], errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .binary);
     try expect(res.expr.binary.operator == .less);
     try expect(res.expr.binary.left == .binary);
@@ -263,15 +311,19 @@ test "comparison operators" {
 test "equality" {
     const allocator = std.testing.allocator;
 
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
     const tokens = [_]Token{
-        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
-        Token.init(.EQUAL_EQUAL, 0, 1, null),
-        Token.init(.NUMBER, 0, 1, .{ .number = 16 }),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 16 }),
+        Token.init(.EQUAL_EQUAL, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 16 }),
     };
 
-    const res = try parse.parse(allocator, tokens[0..]);
+    const res = try parse.parse(allocator, tokens[0..], errOut.writer());
     defer res.expr.destroy(allocator);
 
+    try expect(errOut.items.len == 0); // no error output
     try expect(res.expr == .binary);
     try expect(res.expr.binary.operator == .equal_equal);
     try expect(res.expr.binary.left == .literal);
@@ -280,4 +332,27 @@ test "equality" {
     try expect(res.expr.binary.right == .literal);
     try expect(res.expr.binary.right.literal.type == .number);
     try expect(res.expr.binary.right.literal.value.?.number == 16);
+}
+
+test "syntactic errors" {
+    const allocator = std.testing.allocator;
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    const tokens = [_]Token{
+        Token.init(.LEFT_PAREN, 0, 1, 1, null),
+        Token.init(.NUMBER, 0, 1, 1, .{ .number = 16 }),
+        Token.init(.PLUS, 0, 1, 1, null),
+        Token.init(.RIGHT_PAREN, 0, 1, 1, null),
+        Token.init(.EOF, 0, 1, 1, null),
+    };
+
+    const res = parse.parse(allocator, tokens[0..], errOut.writer()) catch |err| {
+        try expect(err == parse.Error.ParseError);
+        return;
+    };
+    defer res.expr.destroy(allocator);
+
+    try expect(std.mem.eql(u8, "[line 1] Error at ')': Expect expression.\n", errOut.items[0..]));
 }

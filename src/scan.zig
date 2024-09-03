@@ -72,43 +72,22 @@ const keyword_slice = [_]struct { []const u8, TokenType }{
 
 const keyword_type_map = std.StaticStringMap(TokenType).initComptime(keyword_slice);
 
-// const LiteralTag = enum { string, number };
-
 pub const LiteralStorage = union {
     // a small string optimization could be implemented here
     // another possibility would be to use a string oobject pool that only needs to be deallocated once
     string: []const u8,
     number: f64,
-
-    // pub fn format(self: LiteralStorage, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
-    //     _ = fmt;
-    //     _ = options;
-    //
-    //     switch (self) {
-    //         .string => try writer.print("{s}", .{self.string}),
-    //         .number => {
-    //             const number: f64 = self.number;
-    //             const number_int: i64 = @intFromFloat(number);
-    //             const number_recast: f64 = @floatFromInt(number_int);
-    //
-    //             if (number == number_recast) {
-    //                 try writer.print("{d:.1}", .{number});
-    //             } else {
-    //                 try writer.print("{d}", .{number});
-    //             }
-    //         },
-    //     }
-    // }
 };
 
 pub const Token = struct {
     type: TokenType,
     start: usize,
     length: usize,
+    line: usize,
     literal: ?LiteralStorage,
 
-    pub fn init(tokenType: TokenType, start: usize, length: usize, literal: ?LiteralStorage) Token {
-        return Token{ .type = tokenType, .start = start, .length = length, .literal = literal };
+    pub fn init(tokenType: TokenType, start: usize, length: usize, line: usize, literal: ?LiteralStorage) Token {
+        return Token{ .type = tokenType, .start = start, .length = length, .line = line, .literal = literal };
     }
 };
 
@@ -118,7 +97,7 @@ pub fn eql(a: Token, b: Token) bool {
         .NUMBER => b.type == .NUMBER and a.literal.?.number == b.literal.?.number,
         else => a.type == b.type and a.literal == null and b.literal == null,
     };
-    return type_and_literal and a.start == b.start and a.length == b.length;
+    return type_and_literal and a.start == b.start and a.length == b.length and a.line == b.line;
 }
 
 fn lexeme(token: Token, content: []const u8) []const u8 {
@@ -139,47 +118,47 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                 line += 1;
                 break :blk null;
             },
-            '(' => Token.init(.LEFT_PAREN, i, 1, null),
-            ')' => Token.init(.RIGHT_PAREN, i, 1, null),
-            '{' => Token.init(.LEFT_BRACE, i, 1, null),
-            '}' => Token.init(.RIGHT_BRACE, i, 1, null),
-            ',' => Token.init(.COMMA, i, 1, null),
-            '.' => Token.init(.DOT, i, 1, null),
-            '-' => Token.init(.MINUS, i, 1, null),
-            '+' => Token.init(.PLUS, i, 1, null),
-            ';' => Token.init(.SEMICOLON, i, 1, null),
-            '*' => Token.init(.STAR, i, 1, null),
+            '(' => Token.init(.LEFT_PAREN, i, 1, line, null),
+            ')' => Token.init(.RIGHT_PAREN, i, 1, line, null),
+            '{' => Token.init(.LEFT_BRACE, i, 1, line, null),
+            '}' => Token.init(.RIGHT_BRACE, i, 1, line, null),
+            ',' => Token.init(.COMMA, i, 1, line, null),
+            '.' => Token.init(.DOT, i, 1, line, null),
+            '-' => Token.init(.MINUS, i, 1, line, null),
+            '+' => Token.init(.PLUS, i, 1, line, null),
+            ';' => Token.init(.SEMICOLON, i, 1, line, null),
+            '*' => Token.init(.STAR, i, 1, line, null),
             '!' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.BANG_EQUAL, i, 2, null);
+                    const token = Token.init(.BANG_EQUAL, i, 2, line, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.BANG, i, 1, null);
+                break :blk Token.init(.BANG, i, 1, line, null);
             },
             '=' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.EQUAL_EQUAL, i, 2, null);
+                    const token = Token.init(.EQUAL_EQUAL, i, 2, line, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.EQUAL, i, 1, null);
+                break :blk Token.init(.EQUAL, i, 1, line, null);
             },
             '<' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.LESS_EQUAL, i, 2, null);
+                    const token = Token.init(.LESS_EQUAL, i, 2, line, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.LESS, i, 1, null);
+                break :blk Token.init(.LESS, i, 1, line, null);
             },
             '>' => blk: {
                 if (i + 1 < len and content[i + 1] == '=') {
-                    const token = Token.init(.GREATER_EQUAL, i, 2, null);
+                    const token = Token.init(.GREATER_EQUAL, i, 2, line, null);
                     i += 1;
                     break :blk token;
                 }
-                break :blk Token.init(.GREATER, i, 1, null);
+                break :blk Token.init(.GREATER, i, 1, line, null);
             },
             '/' => blk: {
                 if (i + 1 < len and content[i + 1] == '/') {
@@ -191,7 +170,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                     line += 1;
                     break :blk null;
                 }
-                break :blk Token.init(.SLASH, i, 1, null);
+                break :blk Token.init(.SLASH, i, 1, line, null);
             },
             '"' => blk: {
                 // string literal
@@ -214,7 +193,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
                 }
 
                 const store = try allocator.dupe(u8, content[strStart + 1 .. i]);
-                break :blk Token.init(.STRING, strStart, i - strStart + 1, .{ .string = store });
+                break :blk Token.init(.STRING, strStart, i - strStart + 1, line, .{ .string = store });
             },
             '0'...'9' => blk: {
                 // number literal
@@ -229,7 +208,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
 
                 const numEnd = i + 1;
                 const num = try std.fmt.parseFloat(f64, content[numStart..numEnd]);
-                break :blk Token.init(.NUMBER, numStart, numEnd - numStart, .{ .number = num });
+                break :blk Token.init(.NUMBER, numStart, numEnd - numStart, line, .{ .number = num });
             },
             'A'...'Z', 'a'...'z', '_' => blk: {
                 // keyword or identifier
@@ -244,10 +223,10 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
 
                 const potential_keyword = content[numStart..numEnd];
                 if (keyword_type_map.get(potential_keyword)) |tokenType| {
-                    break :blk Token.init(tokenType, numStart, numEnd - numStart, null);
+                    break :blk Token.init(tokenType, numStart, numEnd - numStart, line, null);
                 }
 
-                break :blk Token.init(.IDENTIFIER, numStart, numEnd - numStart, null);
+                break :blk Token.init(.IDENTIFIER, numStart, numEnd - numStart, line, null);
             },
             else => blk: {
                 const unexpected_char = content[i .. i + 1];
@@ -262,7 +241,7 @@ fn tokenize(allocator: std.mem.Allocator, content: []const u8, errorWriter: anyt
         i += 1;
     }
 
-    try tokens.append(Token{ .type = TokenType.EOF, .start = i, .length = 0, .literal = null });
+    try tokens.append(Token{ .type = TokenType.EOF, .start = i, .length = 0, .line = line, .literal = null });
 
     return .{ .tokens = tokens, .errors = errors, .allocator = allocator };
 }

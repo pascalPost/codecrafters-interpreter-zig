@@ -16,6 +16,8 @@ const Unary = ast.Unary;
 const Operator = ast.Operator;
 const Binary = ast.Binary;
 
+pub const Error = error{ParseError} || std.mem.Allocator.Error || std.posix.WriteError;
+
 const Result = struct {
     expr: Expr,
     tokens: []const scan.Token,
@@ -25,49 +27,49 @@ const Result = struct {
     }
 };
 
-fn create_unary(allocator: std.mem.Allocator, tokens: []const scan.Token, op: Operator) std.mem.Allocator.Error!Result {
-    const right = try unary(allocator, tokens[1..]);
+fn create_unary(allocator: std.mem.Allocator, tokens: []const scan.Token, op: Operator, errorWriter: anytype) Error!Result {
+    const right = try unary(allocator, tokens[1..], errorWriter);
     return Result.init(.{ .unary = try Unary.create(allocator, op, right.expr) }, right.tokens);
 }
 
-fn create_factor(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator) std.mem.Allocator.Error!Result {
+fn create_factor(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator, errorWriter: anytype) Error!Result {
     // we use tokens[1..] to account for operator (tokens[0])
     std.debug.assert(tokens.len > 1);
-    const right = try unary(allocator, tokens[1..]);
+    const right = try unary(allocator, tokens[1..], errorWriter);
     return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
 }
 
-fn create_term(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator) std.mem.Allocator.Error!Result {
+fn create_term(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator, errorWriter: anytype) Error!Result {
     // we use tokens[1..] to account for operator (tokens[0])
     std.debug.assert(tokens.len > 1);
-    const right = try factor(allocator, tokens[1..]);
+    const right = try factor(allocator, tokens[1..], errorWriter);
     return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
 }
 
-fn create_comparison(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator) std.mem.Allocator.Error!Result {
+fn create_comparison(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator, errorWriter: anytype) Error!Result {
     // we use tokens[1..] to account for operator (tokens[0])
     std.debug.assert(tokens.len > 1);
-    const right = try term(allocator, tokens[1..]);
+    const right = try term(allocator, tokens[1..], errorWriter);
     return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
 }
 
-fn create_equality(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator) std.mem.Allocator.Error!Result {
+fn create_equality(allocator: std.mem.Allocator, tokens: []const scan.Token, left: Expr, op: Operator, errorWriter: anytype) Error!Result {
     // we use tokens[1..] to account for operator (tokens[0])
     std.debug.assert(tokens.len > 1);
-    const right = try comparison(allocator, tokens[1..]);
+    const right = try comparison(allocator, tokens[1..], errorWriter);
     return Result.init(.{ .binary = try Binary.create(allocator, left, op, right.expr) }, right.tokens);
 }
 
 // merge create_factor, create_term, create_comparison abd create_equality into a single function
 
-fn equality(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+fn equality(allocator: std.mem.Allocator, tokens: []const scan.Token, errorWriter: anytype) Error!Result {
     std.debug.assert(tokens.len > 0);
-    var res = try comparison(allocator, tokens);
+    var res = try comparison(allocator, tokens, errorWriter);
 
     while (res.tokens.len > 0) {
         switch (res.tokens[0].type) {
-            .BANG_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .bang_equal),
-            .EQUAL_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .equal_equal),
+            .BANG_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .bang_equal, errorWriter),
+            .EQUAL_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .equal_equal, errorWriter),
             else => break,
         }
     }
@@ -75,16 +77,16 @@ fn equality(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Al
     return res;
 }
 
-fn comparison(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+fn comparison(allocator: std.mem.Allocator, tokens: []const scan.Token, errorWriter: anytype) Error!Result {
     std.debug.assert(tokens.len > 0);
-    var res = try term(allocator, tokens);
+    var res = try term(allocator, tokens, errorWriter);
 
     while (res.tokens.len > 0) {
         switch (res.tokens[0].type) {
-            .GREATER => res = try create_term(allocator, res.tokens, res.expr, .greater),
-            .GREATER_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .greater_equal),
-            .LESS => res = try create_term(allocator, res.tokens, res.expr, .less),
-            .LESS_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .less_equal),
+            .GREATER => res = try create_term(allocator, res.tokens, res.expr, .greater, errorWriter),
+            .GREATER_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .greater_equal, errorWriter),
+            .LESS => res = try create_term(allocator, res.tokens, res.expr, .less, errorWriter),
+            .LESS_EQUAL => res = try create_term(allocator, res.tokens, res.expr, .less_equal, errorWriter),
             else => break,
         }
     }
@@ -92,14 +94,14 @@ fn comparison(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.
     return res;
 }
 
-fn term(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+fn term(allocator: std.mem.Allocator, tokens: []const scan.Token, errorWriter: anytype) Error!Result {
     std.debug.assert(tokens.len > 0);
-    var res = try factor(allocator, tokens);
+    var res = try factor(allocator, tokens, errorWriter);
 
     while (res.tokens.len > 0) {
         switch (res.tokens[0].type) {
-            .MINUS => res = try create_term(allocator, res.tokens, res.expr, .minus),
-            .PLUS => res = try create_term(allocator, res.tokens, res.expr, .plus),
+            .MINUS => res = try create_term(allocator, res.tokens, res.expr, .minus, errorWriter),
+            .PLUS => res = try create_term(allocator, res.tokens, res.expr, .plus, errorWriter),
             else => break,
         }
     }
@@ -107,14 +109,14 @@ fn term(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Alloca
     return res;
 }
 
-fn factor(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+fn factor(allocator: std.mem.Allocator, tokens: []const scan.Token, errorWriter: anytype) Error!Result {
     std.debug.assert(tokens.len > 0);
-    var res = try unary(allocator, tokens);
+    var res = try unary(allocator, tokens, errorWriter);
 
     while (res.tokens.len > 0) {
         switch (res.tokens[0].type) {
-            .SLASH => res = try create_factor(allocator, res.tokens, res.expr, .slash),
-            .STAR => res = try create_factor(allocator, res.tokens, res.expr, .star),
+            .SLASH => res = try create_factor(allocator, res.tokens, res.expr, .slash, errorWriter),
+            .STAR => res = try create_factor(allocator, res.tokens, res.expr, .star, errorWriter),
             else => break,
         }
     }
@@ -123,17 +125,17 @@ fn factor(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allo
 }
 
 /// Parse a unary expression: ( "!" | "-" ) unary | primary ;
-fn unary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+fn unary(allocator: std.mem.Allocator, tokens: []const scan.Token, errorWriter: anytype) Error!Result {
     std.debug.assert(tokens.len > 0);
     switch (tokens[0].type) {
-        .BANG => return create_unary(allocator, tokens, .bang),
-        .MINUS => return create_unary(allocator, tokens, .minus),
-        else => return primary(allocator, tokens),
+        .BANG => return create_unary(allocator, tokens, .bang, errorWriter),
+        .MINUS => return create_unary(allocator, tokens, .minus, errorWriter),
+        else => return primary(allocator, tokens, errorWriter),
     }
 }
 
 /// Parse a primary expression: "false" | "true" | "nil" | NUMBER | STRING | "(" expression ")" ;
-fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
+fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token, errorWriter: anytype) Error!Result {
     std.debug.assert(tokens.len > 0);
     const token = tokens[0];
     switch (token.type) {
@@ -144,17 +146,25 @@ fn primary(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.All
         .STRING => return Result.init(.{ .literal = try Literal.create(allocator, .string, .{ .string = token.literal.?.string }) }, tokens[1..]),
 
         .LEFT_PAREN => {
-            const inner = try parse(allocator, tokens[1..]);
+            const inner = try parse(allocator, tokens[1..], errorWriter);
 
-            std.debug.assert(inner.tokens.len > 0 and inner.tokens[0].type == .RIGHT_PAREN);
+            std.debug.assert(inner.tokens.len > 0);
+            if (inner.tokens[0].type != .RIGHT_PAREN) {
+                try errorWriter.print("[line {d}] Expect ')' after expression.", .{inner.tokens[0].line});
+                return Error.ParseError;
+            }
 
             return Result.init(.{ .grouping = try Grouping.create(allocator, inner.expr) }, inner.tokens[1..]);
         },
 
-        else => unreachable,
+        else => {
+            std.debug.assert(tokens.len > 0);
+            try errorWriter.print("[line {d}] Expect expression.", .{tokens[0].line});
+            return Error.ParseError;
+        },
     }
 }
 
-pub fn parse(allocator: std.mem.Allocator, tokens: []const scan.Token) std.mem.Allocator.Error!Result {
-    return equality(allocator, tokens);
+pub fn parse(allocator: std.mem.Allocator, tokens: []const scan.Token, errorWriter: anytype) Error!Result {
+    return equality(allocator, tokens, errorWriter);
 }
