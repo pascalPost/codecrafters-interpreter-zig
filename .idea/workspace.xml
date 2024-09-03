@@ -46,6 +46,8 @@
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file:///usr/lib/zig/std/testing.zig" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -63,6 +65,7 @@
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "Zig test.all tests in evaluate.zig.executor": "Run",
+    "Zig test.all tests in test_eval.zig.executor": "Run",
     "Zig test.all tests in test_parse.zig.executor": "Run",
     "Zig test.all tests in test_scan.zig.executor": "Run",
     "cf.first.check.clang-format": "false",
@@ -151,7 +154,7 @@
       <workItem from="1725290640687" duration="1512000" />
       <workItem from="1725292162566" duration="1402000" />
       <workItem from="1725306163304" duration="5305000" />
-      <workItem from="1725374875521" duration="13309000" />
+      <workItem from="1725374875521" duration="13781000" />
     </task>
     <servers />
   </component>

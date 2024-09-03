@@ -70,6 +70,8 @@ pub fn eval(expr: Expr) ?Result {
             switch (b.operator) {
                 .slash => return .{ .number = eval(b.left).?.number / eval(b.right).?.number },
                 .star => return .{ .number = eval(b.left).?.number * eval(b.right).?.number },
+                .plus => return .{ .number = eval(b.left).?.number + eval(b.right).?.number },
+                .minus => return .{ .number = eval(b.left).?.number - eval(b.right).?.number },
                 else => unreachable,
             }
         },
