@@ -36,8 +36,6 @@ const Result = union(Tag) {
     }
 };
 
-const expect = std.testing.expect;
-
 fn to_bool(val: ?Result) bool {
     if (val) |v| {
         switch (v) {
@@ -68,72 +66,12 @@ pub fn eval(expr: Expr) ?Result {
                 else => unreachable,
             }
         },
-        else => unreachable,
+        .binary => |b| {
+            switch (b.operator) {
+                .slash => return .{ .number = eval(b.left).?.number / eval(b.right).?.number },
+                .star => return .{ .number = eval(b.left).?.number * eval(b.right).?.number },
+                else => unreachable,
+            }
+        },
     }
-}
-
-test "literals: false" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .literal = try Literal.create(allocator, .false, null) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(res.?.bool == false);
-}
-
-test "literals: true" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .literal = try Literal.create(allocator, .true, null) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(res.?.bool == true);
-}
-
-test "literals: nil" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .literal = try Literal.create(allocator, .nil, null) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(res == null);
-}
-
-test "literals: number" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(res.?.number == 42);
-
-    try std.io.getStdOut().writer().print("{}\n", .{res.?});
-}
-
-test "literals: string" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .literal = try Literal.create(allocator, .string, .{ .string = "test" }) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(std.mem.eql(u8, res.?.string, "test"));
-}
-
-test "parentheses" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .grouping = try Grouping.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(res.?.number == 42);
-}
-
-test "unary operators: negation" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .unary = try Unary.create(allocator, .minus, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(res.?.number == -42);
-}
-
-test "unary operators: logical not" {
-    const allocator = std.testing.allocator;
-    const expr = Expr{ .unary = try Unary.create(allocator, .bang, Expr{ .literal = try Literal.create(allocator, .true, null) }) };
-    defer expr.destroy(allocator);
-    const res = eval(expr);
-    try expect(res.?.bool == false);
 }

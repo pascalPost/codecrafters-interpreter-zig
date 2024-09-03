@@ -12,10 +12,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/evaluate.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/evaluate.zig" afterDir="false" />
-    </list>
+    <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -81,11 +78,23 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Zig test.all tests in evaluate.zig">
+  <component name="RunManager" selected="Zig test.all tests in test_eval.zig">
     <configuration name="all tests in evaluate.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
       <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
       <ZigBrainsOption name="pty" value="false" />
       <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/evaluate.zig" />
+      <ZigBrainsNestedOption name="optimization">
+        <ZigBrainsOption name="level" value="Debug" />
+        <ZigBrainsOption name="forced" value="false" />
+      </ZigBrainsNestedOption>
+      <ZigBrainsOption name="colored" value="true" />
+      <ZigBrainsArrayOption name="compilerArgs" />
+      <method v="2" />
+    </configuration>
+    <configuration name="all tests in test_eval.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
+      <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
+      <ZigBrainsOption name="pty" value="false" />
+      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/test_eval.zig" />
       <ZigBrainsNestedOption name="optimization">
         <ZigBrainsOption name="level" value="Debug" />
         <ZigBrainsOption name="forced" value="false" />
@@ -120,6 +129,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Zig test.all tests in test_eval.zig" />
         <item itemvalue="Zig test.all tests in evaluate.zig" />
         <item itemvalue="Zig test.all tests in test_parse.zig" />
         <item itemvalue="Zig test.all tests in test_scan.zig" />
@@ -141,7 +151,7 @@
       <workItem from="1725290640687" duration="1512000" />
       <workItem from="1725292162566" duration="1402000" />
       <workItem from="1725306163304" duration="5305000" />
-      <workItem from="1725374875521" duration="12862000" />
+      <workItem from="1725374875521" duration="13309000" />
     </task>
     <servers />
   </component>
