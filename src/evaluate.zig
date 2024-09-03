@@ -38,6 +38,17 @@ const Result = union(Tag) {
 
 const expect = std.testing.expect;
 
+fn to_bool(val: ?Result) bool {
+    if (val) |v| {
+        switch (v) {
+            .bool => return v.bool,
+            else => return true,
+        }
+    }
+
+    return false;
+}
+
 pub fn eval(expr: Expr) ?Result {
     switch (expr) {
         .literal => |l| {
@@ -50,6 +61,13 @@ pub fn eval(expr: Expr) ?Result {
             }
         },
         .grouping => |c| return eval(c.expr),
+        .unary => |u| {
+            switch (u.operator) {
+                .minus => return .{ .number = -eval(u.right).?.number },
+                .bang => return .{ .bool = !to_bool(eval(u.right)) },
+                else => unreachable,
+            }
+        },
         else => unreachable,
     }
 }
@@ -102,4 +120,20 @@ test "parentheses" {
     defer expr.destroy(allocator);
     const res = eval(expr);
     try expect(res.?.number == 42);
+}
+
+test "unary operators: negation" {
+    const allocator = std.testing.allocator;
+    const expr = Expr{ .unary = try Unary.create(allocator, .minus, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }) };
+    defer expr.destroy(allocator);
+    const res = eval(expr);
+    try expect(res.?.number == -42);
+}
+
+test "unary operators: logical not" {
+    const allocator = std.testing.allocator;
+    const expr = Expr{ .unary = try Unary.create(allocator, .bang, Expr{ .literal = try Literal.create(allocator, .true, null) }) };
+    defer expr.destroy(allocator);
+    const res = eval(expr);
+    try expect(res.?.bool == false);
 }
