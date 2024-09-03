@@ -14,11 +14,8 @@
   <component name="ChangeListManager">
     <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/expressions.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/expressions.zig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/parse.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scan.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/scan.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test_parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/test_parse.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test_scan.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/test_scan.zig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +24,13 @@
   </component>
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Zig File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -50,6 +54,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "Zig test.all tests in evaluate.zig.executor": "Run",
     "Zig test.all tests in test_parse.zig.executor": "Run",
     "Zig test.all tests in test_scan.zig.executor": "Run",
     "cf.first.check.clang-format": "false",
@@ -65,7 +70,19 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Zig test.all tests in test_parse.zig">
+  <component name="RunManager" selected="Zig test.all tests in evaluate.zig">
+    <configuration name="all tests in evaluate.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
+      <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
+      <ZigBrainsOption name="pty" value="false" />
+      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/evaluate.zig" />
+      <ZigBrainsNestedOption name="optimization">
+        <ZigBrainsOption name="level" value="Debug" />
+        <ZigBrainsOption name="forced" value="false" />
+      </ZigBrainsNestedOption>
+      <ZigBrainsOption name="colored" value="true" />
+      <ZigBrainsArrayOption name="compilerArgs" />
+      <method v="2" />
+    </configuration>
     <configuration name="all tests in test_parse.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
       <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
       <ZigBrainsOption name="pty" value="false" />
@@ -92,6 +109,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Zig test.all tests in evaluate.zig" />
         <item itemvalue="Zig test.all tests in test_parse.zig" />
         <item itemvalue="Zig test.all tests in test_scan.zig" />
       </list>
@@ -112,7 +130,7 @@
       <workItem from="1725290640687" duration="1512000" />
       <workItem from="1725292162566" duration="1402000" />
       <workItem from="1725306163304" duration="5305000" />
-      <workItem from="1725374875521" duration="6238000" />
+      <workItem from="1725374875521" duration="8355000" />
     </task>
     <servers />
   </component>

@@ -110,7 +110,7 @@ pub const Grouping = struct {
     }
 };
 
-const LiteralType = enum { number, string, true, false, nil };
+pub const LiteralType = enum { number, string, true, false, nil };
 
 pub const Literal = struct {
     type: LiteralType,

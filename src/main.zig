@@ -1,6 +1,7 @@
 const std = @import("std");
 const scan = @import("scan.zig");
 const parser = @import("parse.zig");
+const eval = @import("evaluate.zig");
 
 pub fn main() !void {
     const args = try std.process.argsAlloc(std.heap.page_allocator);
@@ -16,8 +17,9 @@ pub fn main() !void {
 
     const tokenize = std.mem.eql(u8, command, "tokenize");
     const parse = std.mem.eql(u8, command, "parse");
+    const evaluate = std.mem.eql(u8, command, "evaluate");
 
-    if (!(tokenize or parse)) {
+    if (!(tokenize or parse or evaluate)) {
         std.debug.print("Unknown command: {s}\n", .{command});
         std.process.exit(1);
     }
@@ -43,11 +45,22 @@ pub fn main() !void {
         std.process.exit(std.process.exit(65)); // EX_DATAERR (65) from sysexits.h
     }
 
+    if (tokenize) return;
+
+    const parseRes = parser.parse(allocator, scanner.tokens.items, std.io.getStdErr().writer()) catch {
+        std.process.exit(std.process.exit(65));
+    };
+    defer parseRes.expr.destroy(allocator);
+
     if (parse) {
-        const res = parser.parse(allocator, scanner.tokens.items, std.io.getStdErr().writer()) catch {
-            std.process.exit(std.process.exit(65));
-        };
-        defer res.expr.destroy(allocator);
-        try std.io.getStdOut().writer().print("{}", .{res.expr});
+        try std.io.getStdOut().writer().print("{}", .{parseRes.expr});
+        return;
+    }
+
+    const res = eval.eval(parseRes.expr);
+    if (res) |val| {
+        try std.io.getStdOut().writer().print("{}\n", .{val});
+    } else {
+        try std.io.getStdOut().writer().writeAll("nil\n");
     }
 }
