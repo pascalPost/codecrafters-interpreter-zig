@@ -105,6 +105,8 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) std.mem.Allocator.Error!?R
                 .less_equal => return .{ .bool = (try eval(allocator, b.left)).?.number <= (try eval(allocator, b.right)).?.number },
                 .greater => return .{ .bool = (try eval(allocator, b.left)).?.number > (try eval(allocator, b.right)).?.number },
                 .greater_equal => return .{ .bool = (try eval(allocator, b.left)).?.number >= (try eval(allocator, b.right)).?.number },
+                .equal_equal => return .{ .bool = (try eval(allocator, b.left)).?.number == (try eval(allocator, b.right)).?.number },
+                .bang_equal => return .{ .bool = (try eval(allocator, b.left)).?.number != (try eval(allocator, b.right)).?.number },
                 else => unreachable,
             }
         },
