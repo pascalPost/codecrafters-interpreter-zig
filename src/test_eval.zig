@@ -46,8 +46,7 @@ test "literals: string" {
     const expr = Expr{ .literal = try Literal.create(allocator, .string, .{ .string = "test" }) };
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
-    defer res.?.deinit(allocator);
-    try expect(std.mem.eql(u8, res.?.string, "test"));
+    try expect(std.mem.eql(u8, res.?.string.value, "test"));
 }
 
 test "parentheses" {
@@ -88,5 +87,5 @@ test "string concatenation" {
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
     defer res.?.deinit(allocator);
-    try expect(std.mem.eql(u8, res.?.string, "foobar"));
+    try expect(std.mem.eql(u8, res.?.string.value, "foobar"));
 }

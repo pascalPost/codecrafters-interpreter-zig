@@ -12,11 +12,11 @@ const Tag = enum(u2) { bool, number, string };
 pub const Result = union(Tag) {
     bool: bool,
     number: f64,
-    string: []const u8,
+    string: struct { value: []const u8, owning: bool = false },
 
     pub fn deinit(self: Result, allocator: std.mem.Allocator) void {
-        if (self == .string) {
-            allocator.free(self.string);
+        if (self == .string and self.string.owning) {
+            allocator.free(self.string.value);
         }
     }
 
@@ -37,7 +37,7 @@ pub const Result = union(Tag) {
                     try writer.print("{d}", .{number});
                 }
             },
-            .string => try writer.print("{s}", .{self.string}),
+            .string => |s| try writer.print("{s}", .{s.value}),
         }
     }
 };
@@ -68,13 +68,9 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) std.mem.Allocator.Error!?R
                 .true => return .{ .bool = true },
                 .nil => return null,
                 .number => return .{ .number = l.value.?.number },
-                .string => {
 
-                    // TODO this is an unnecessary copy; perhaps we can enhance by differentiating between an string literal and a string
-                    const store = try allocator.dupe(u8, l.value.?.string);
-
-                    return .{ .string = store };
-                },
+                // TODO perhaps ownership can be transferred here; has to be reviewed once all is working to know for sure
+                .string => return .{ .string = .{ .value = l.value.?.string, .owning = false } },
             }
         },
         .grouping => |c| return try eval(allocator, c.expr),
@@ -97,11 +93,10 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) std.mem.Allocator.Error!?R
                     if (left == .string) {
                         std.debug.assert(right == .string);
 
-                        // TODO this is probably not the most efficient way to do this
-                        defer allocator.free(left.string);
-                        defer allocator.free(right.string);
+                        defer left.deinit(allocator);
+                        defer right.deinit(allocator);
 
-                        return .{ .string = try concat(allocator, left.string, right.string) };
+                        return .{ .string = .{ .value = try concat(allocator, left.string.value, right.string.value), .owning = true } };
                     }
 
                     return .{ .number = (try eval(allocator, b.left)).?.number + (try eval(allocator, b.right)).?.number };
