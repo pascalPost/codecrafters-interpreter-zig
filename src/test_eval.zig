@@ -89,3 +89,11 @@ test "string concatenation" {
     defer res.?.deinit(allocator);
     try expect(std.mem.eql(u8, res.?.string.value, "foobar"));
 }
+
+test "relational operators" {
+    const allocator = std.testing.allocator;
+    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }, .greater, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 5 }) }) };
+    defer expr.destroy(allocator);
+    const res = try eval(allocator, expr);
+    try expect(res.?.bool == true);
+}
