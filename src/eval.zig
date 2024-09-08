@@ -60,6 +60,19 @@ fn concat(allocator: std.mem.Allocator, a: []const u8, b: []const u8) ![]u8 {
     return result;
 }
 
+fn equality_operator(allocator: std.mem.Allocator, left_expr: Expr, right_expr: Expr) std.mem.Allocator.Error!?Result {
+    const left = (try eval(allocator, left_expr)).?;
+    const right = (try eval(allocator, right_expr)).?;
+
+    switch (left) {
+        .string => return .{ .bool = right == .string and std.mem.eql(u8, left.string.value, right.string.value) },
+        .number => return .{ .bool = right == .number and left.number == right.number },
+        .bool => return .{ .bool = right == .bool and left.bool == right.bool },
+    }
+
+    return .{ .bool = false };
+}
+
 pub fn eval(allocator: std.mem.Allocator, expr: Expr) std.mem.Allocator.Error!?Result {
     switch (expr) {
         .literal => |l| {
@@ -105,8 +118,12 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) std.mem.Allocator.Error!?R
                 .less_equal => return .{ .bool = (try eval(allocator, b.left)).?.number <= (try eval(allocator, b.right)).?.number },
                 .greater => return .{ .bool = (try eval(allocator, b.left)).?.number > (try eval(allocator, b.right)).?.number },
                 .greater_equal => return .{ .bool = (try eval(allocator, b.left)).?.number >= (try eval(allocator, b.right)).?.number },
-                .equal_equal => return .{ .bool = (try eval(allocator, b.left)).?.number == (try eval(allocator, b.right)).?.number },
-                .bang_equal => return .{ .bool = (try eval(allocator, b.left)).?.number != (try eval(allocator, b.right)).?.number },
+                .equal_equal => return equality_operator(allocator, b.left, b.right),
+                .bang_equal => {
+                    var result = try equality_operator(allocator, b.left, b.right);
+                    result.?.bool = !result.?.bool;
+                    return result;
+                },
                 else => unreachable,
             }
         },
