@@ -1,7 +1,7 @@
 const std = @import("std");
 const scan = @import("scan.zig");
 const parser = @import("parse.zig");
-const eval = @import("evaluate.zig");
+const eval = @import("eval.zig");
 
 pub fn main() !void {
     const args = try std.process.argsAlloc(std.heap.page_allocator);
@@ -57,8 +57,9 @@ pub fn main() !void {
         return;
     }
 
-    const res = eval.eval(parseRes.expr);
+    const res = try eval.eval(allocator, parseRes.expr);
     if (res) |val| {
+        defer val.deinit(allocator);
         try std.io.getStdOut().writer().print("{}\n", .{val});
     } else {
         try std.io.getStdOut().writer().writeAll("nil\n");
