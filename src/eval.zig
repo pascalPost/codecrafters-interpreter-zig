@@ -7,7 +7,7 @@ const Unary = ast.Unary;
 const Operator = ast.Operator;
 const Binary = ast.Binary;
 
-pub const Error = error{OperandNoNumber} || std.mem.Allocator.Error || std.posix.WriteError;
+pub const Error = error{ OperandNoNumber, OperandsNoNumbers } || std.mem.Allocator.Error || std.posix.WriteError;
 
 const Tag = enum(u2) { bool, number, string };
 
@@ -62,10 +62,7 @@ fn concat(allocator: std.mem.Allocator, a: []const u8, b: []const u8) ![]u8 {
     return result;
 }
 
-fn equality_operator(allocator: std.mem.Allocator, left_expr: Expr, right_expr: Expr) Error!?Result {
-    const left = (try eval(allocator, left_expr)).?;
-    const right = (try eval(allocator, right_expr)).?;
-
+fn equality_operator(left: Result, right: Result) Error!?Result {
     switch (left) {
         .string => return .{ .bool = right == .string and std.mem.eql(u8, left.string.value, right.string.value) },
         .number => return .{ .bool = right == .number and left.number == right.number },
@@ -93,8 +90,10 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
             switch (u.operator.type) {
                 .minus => {
                     const right = try eval(allocator, u.right);
+                    errdefer if (right) |e| e.deinit(allocator);
+
                     if (right == null or right.? != .number) {
-                        try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be numbers.\n", .{u.operator.line});
+                        try std.io.getStdErr().writer().print("[line {d}] Error: Operand must be a number.\n", .{u.operator.line});
                         return error.OperandNoNumber;
                     }
                     return .{ .number = -(try eval(allocator, u.right)).?.number };
@@ -104,32 +103,51 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
             }
         },
         .binary => |b| {
+            const left = (try eval(allocator, b.left));
+            const right = (try eval(allocator, b.right));
+
+            errdefer if (left) |r| r.deinit(allocator);
+            errdefer if (right) |r| r.deinit(allocator);
+
             switch (b.operator.type) {
-                .slash => return .{ .number = (try eval(allocator, b.left)).?.number / (try eval(allocator, b.right)).?.number },
-                .star => return .{ .number = (try eval(allocator, b.left)).?.number * (try eval(allocator, b.right)).?.number },
-                .minus => return .{ .number = (try eval(allocator, b.left)).?.number - (try eval(allocator, b.right)).?.number },
+                .slash, .star, .minus => {
+                    if (left == null or left.? != .number or right == null or right.? != .number) {
+                        try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be numbers.\n", .{b.operator.line});
+                        return error.OperandNoNumber;
+                    }
+                },
                 .plus => {
-                    const left = (try eval(allocator, b.left)).?;
-                    const right = (try eval(allocator, b.right)).?;
+                    if (left == null or right == null) {
+                        try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be numbers.\n", .{b.operator.line});
+                        return error.OperandNoNumber;
+                    }
+                },
+                else => {},
+            }
 
-                    if (left == .string) {
-                        std.debug.assert(right == .string);
+            switch (b.operator.type) {
+                .slash => return .{ .number = left.?.number / right.?.number },
+                .star => return .{ .number = left.?.number * right.?.number },
+                .minus => return .{ .number = left.?.number - right.?.number },
+                .plus => {
+                    if (left.? == .string) {
+                        std.debug.assert(right.? == .string);
 
-                        defer left.deinit(allocator);
-                        defer right.deinit(allocator);
+                        defer left.?.deinit(allocator);
+                        defer right.?.deinit(allocator);
 
-                        return .{ .string = .{ .value = try concat(allocator, left.string.value, right.string.value), .owning = true } };
+                        return .{ .string = .{ .value = try concat(allocator, left.?.string.value, right.?.string.value), .owning = true } };
                     }
 
-                    return .{ .number = (try eval(allocator, b.left)).?.number + (try eval(allocator, b.right)).?.number };
+                    return .{ .number = left.?.number + right.?.number };
                 },
-                .less => return .{ .bool = (try eval(allocator, b.left)).?.number < (try eval(allocator, b.right)).?.number },
-                .less_equal => return .{ .bool = (try eval(allocator, b.left)).?.number <= (try eval(allocator, b.right)).?.number },
-                .greater => return .{ .bool = (try eval(allocator, b.left)).?.number > (try eval(allocator, b.right)).?.number },
-                .greater_equal => return .{ .bool = (try eval(allocator, b.left)).?.number >= (try eval(allocator, b.right)).?.number },
-                .equal_equal => return equality_operator(allocator, b.left, b.right),
+                .less => return .{ .bool = left.?.number < right.?.number },
+                .less_equal => return .{ .bool = left.?.number <= right.?.number },
+                .greater => return .{ .bool = left.?.number > right.?.number },
+                .greater_equal => return .{ .bool = left.?.number >= right.?.number },
+                .equal_equal => return try equality_operator(left.?, right.?),
                 .bang_equal => {
-                    var result = try equality_operator(allocator, b.left, b.right);
+                    var result = try equality_operator(left.?, right.?);
                     result.?.bool = !result.?.bool;
                     return result;
                 },
