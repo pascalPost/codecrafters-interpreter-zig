@@ -110,7 +110,7 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
             errdefer if (right) |r| r.deinit(allocator);
 
             switch (b.operator.type) {
-                .slash, .star, .minus => {
+                .slash, .star, .minus, .less, .less_equal, .greater, .greater_equal => {
                     if (left == null or left.? != .number or right == null or right.? != .number) {
                         try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be numbers.\n", .{b.operator.line});
                         return error.OperandsNotNumbers;
