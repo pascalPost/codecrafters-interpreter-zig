@@ -59,7 +59,7 @@ test "parentheses" {
 
 test "unary operators: negation" {
     const allocator = std.testing.allocator;
-    const expr = Expr{ .unary = try Unary.create(allocator, .minus, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }) };
+    const expr = Expr{ .unary = try Unary.create(allocator, .{ .type = .minus }, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }) };
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
     try expect(res.?.number == -42);
@@ -67,7 +67,7 @@ test "unary operators: negation" {
 
 test "unary operators: logical not" {
     const allocator = std.testing.allocator;
-    const expr = Expr{ .unary = try Unary.create(allocator, .bang, Expr{ .literal = try Literal.create(allocator, .true, null) }) };
+    const expr = Expr{ .unary = try Unary.create(allocator, .{ .type = .bang }, Expr{ .literal = try Literal.create(allocator, .true, null) }) };
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
     try expect(res.?.bool == false);
@@ -75,7 +75,7 @@ test "unary operators: logical not" {
 
 test "arithmetic operators" {
     const allocator = std.testing.allocator;
-    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }, .slash, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 5 }) }) };
+    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }, .{ .type = .slash }, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 5 }) }) };
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
     try expect(res.?.number == 42.0 / 5.0);
@@ -83,7 +83,7 @@ test "arithmetic operators" {
 
 test "string concatenation" {
     const allocator = std.testing.allocator;
-    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .string, .{ .string = "foo" }) }, .plus, Expr{ .literal = try Literal.create(allocator, .string, .{ .string = "bar" }) }) };
+    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .string, .{ .string = "foo" }) }, .{ .type = .plus }, Expr{ .literal = try Literal.create(allocator, .string, .{ .string = "bar" }) }) };
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
     defer res.?.deinit(allocator);
@@ -92,7 +92,7 @@ test "string concatenation" {
 
 test "relational operators" {
     const allocator = std.testing.allocator;
-    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }, .greater, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 5 }) }) };
+    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }, .{ .type = .greater }, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 5 }) }) };
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
     try expect(res.?.bool == true);
@@ -100,7 +100,7 @@ test "relational operators" {
 
 test "equality operators" {
     const allocator = std.testing.allocator;
-    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }, .equal_equal, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 5 }) }) };
+    const expr = Expr{ .binary = try Binary.create(allocator, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 42 }) }, .{ .type = .equal_equal }, Expr{ .literal = try Literal.create(allocator, .number, .{ .number = 5 }) }) };
     defer expr.destroy(allocator);
     const res = try eval(allocator, expr);
     try expect(res.?.bool == false);

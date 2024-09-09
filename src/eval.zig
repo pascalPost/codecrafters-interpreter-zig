@@ -7,7 +7,7 @@ const Unary = ast.Unary;
 const Operator = ast.Operator;
 const Binary = ast.Binary;
 
-pub const Error = error{OperandNoNumber} || std.mem.Allocator.Error;
+pub const Error = error{OperandNoNumber} || std.mem.Allocator.Error || std.posix.WriteError;
 
 const Tag = enum(u2) { bool, number, string };
 
@@ -90,7 +90,7 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
         },
         .grouping => |c| return try eval(allocator, c.expr),
         .unary => |u| {
-            switch (u.operator) {
+            switch (u.operator.type) {
                 .minus => {
                     const right = try eval(allocator, u.right);
                     if (right == null or right.? != .number) {
@@ -104,7 +104,7 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
             }
         },
         .binary => |b| {
-            switch (b.operator) {
+            switch (b.operator.type) {
                 .slash => return .{ .number = (try eval(allocator, b.left)).?.number / (try eval(allocator, b.right)).?.number },
                 .star => return .{ .number = (try eval(allocator, b.left)).?.number * (try eval(allocator, b.right)).?.number },
                 .minus => return .{ .number = (try eval(allocator, b.left)).?.number - (try eval(allocator, b.right)).?.number },

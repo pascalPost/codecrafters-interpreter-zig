@@ -13,12 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/eval.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/eval.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/expressions.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/expressions.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/parse.zig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test_parse.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/test_parse.zig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test_eval.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/test_eval.zig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +113,7 @@
     "Zig test.all tests in evaluate.zig.executor": "Run",
     "Zig test.all tests in expressions.zig.executor": "Run",
     "Zig test.all tests in test_eval.zig.executor": "Run",
-    "Zig test.all tests in test_parse.zig.executor": "Debug",
+    "Zig test.all tests in test_parse.zig.executor": "Run",
     "Zig test.all tests in test_scan.zig.executor": "Run",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
@@ -133,7 +128,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Zig test.all tests in test_parse.zig">
+  <component name="RunManager" selected="Zig test.all tests in test_eval.zig">
     <configuration name="all tests in evaluate.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
       <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
       <ZigBrainsOption name="pty" value="false" />
@@ -196,10 +191,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Zig test.all tests in test_eval.zig" />
         <item itemvalue="Zig test.all tests in test_parse.zig" />
         <item itemvalue="Zig test.all tests in test_scan.zig" />
         <item itemvalue="Zig test.all tests in expressions.zig" />
-        <item itemvalue="Zig test.all tests in test_eval.zig" />
         <item itemvalue="Zig test.all tests in evaluate.zig" />
       </list>
     </recent_temporary>
@@ -222,28 +217,12 @@
       <workItem from="1725374875521" duration="15524000" />
       <workItem from="1725474998047" duration="24000" />
       <workItem from="1725801883350" duration="13238000" />
-      <workItem from="1725903897314" duration="2424000" />
+      <workItem from="1725903897314" duration="3114000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/parse.zig</url>
-          <line>153</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/parse.zig</url>
-          <line>162</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
