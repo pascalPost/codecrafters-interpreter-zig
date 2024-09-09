@@ -7,6 +7,8 @@ const Unary = ast.Unary;
 const Operator = ast.Operator;
 const Binary = ast.Binary;
 
+pub const Error = error{OperandNoNumber} || std.mem.Allocator.Error;
+
 const Tag = enum(u2) { bool, number, string };
 
 pub const Result = union(Tag) {
@@ -60,7 +62,7 @@ fn concat(allocator: std.mem.Allocator, a: []const u8, b: []const u8) ![]u8 {
     return result;
 }
 
-fn equality_operator(allocator: std.mem.Allocator, left_expr: Expr, right_expr: Expr) std.mem.Allocator.Error!?Result {
+fn equality_operator(allocator: std.mem.Allocator, left_expr: Expr, right_expr: Expr) Error!?Result {
     const left = (try eval(allocator, left_expr)).?;
     const right = (try eval(allocator, right_expr)).?;
 
@@ -73,7 +75,7 @@ fn equality_operator(allocator: std.mem.Allocator, left_expr: Expr, right_expr: 
     return .{ .bool = false };
 }
 
-pub fn eval(allocator: std.mem.Allocator, expr: Expr) std.mem.Allocator.Error!?Result {
+pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
     switch (expr) {
         .literal => |l| {
             switch (l.type) {
@@ -89,7 +91,14 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) std.mem.Allocator.Error!?R
         .grouping => |c| return try eval(allocator, c.expr),
         .unary => |u| {
             switch (u.operator) {
-                .minus => return .{ .number = -(try eval(allocator, u.right)).?.number },
+                .minus => {
+                    const right = try eval(allocator, u.right);
+                    if (right == null or right.? != .number) {
+                        try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be numbers.\n", .{u.operator.line});
+                        return error.OperandNoNumber;
+                    }
+                    return .{ .number = -(try eval(allocator, u.right)).?.number };
+                },
                 .bang => return .{ .bool = !to_bool(try eval(allocator, u.right)) },
                 else => unreachable,
             }

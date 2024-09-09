@@ -2,7 +2,14 @@ const std = @import("std");
 const Token = @import("scan.zig").Token;
 const LiteralStorage = @import("scan.zig").LiteralStorage;
 
-pub const Operator = enum(u4) {
+pub const Operator = struct {
+    type: OperatorType,
+
+    // here a pointer to the token could also be stored
+    line: usize = 1,
+};
+
+const OperatorType = enum(u4) {
     bang,
     minus,
     plus,
@@ -15,7 +22,7 @@ pub const Operator = enum(u4) {
     bang_equal,
     equal_equal,
 
-    pub fn format(self: Operator, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
+    pub fn format(self: OperatorType, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
         _ = fmt;
         _ = options;
 
@@ -90,7 +97,7 @@ pub const Binary = struct {
     pub fn format(self: Binary, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
         _ = fmt;
         _ = options;
-        try writer.print("({} {} {})", .{ self.operator, self.left, self.right });
+        try writer.print("({} {} {})", .{ self.operator.type, self.left, self.right });
     }
 };
 
@@ -162,7 +169,7 @@ pub const Unary = struct {
         _ = fmt;
         _ = options;
 
-        try writer.print("({} {})", .{ self.operator, self.right });
+        try writer.print("({} {})", .{ self.operator.type, self.right });
     }
 };
 
@@ -173,10 +180,10 @@ test "print -123 * ( 45.67 )" {
 
     const expr = Expr{
         .binary = try Binary.create(allocator, .{
-            .unary = try Unary.create(allocator, .minus, .{
+            .unary = try Unary.create(allocator, .{ .type = .minus }, .{
                 .literal = try Literal.create(allocator, .number, .{ .number = 123 }),
             }),
-        }, .star, .{
+        }, .{ .type = .star }, .{
             .grouping = try Grouping.create(allocator, .{
                 .literal = try Literal.create(allocator, .number, .{ .number = 45.67 }),
             }),

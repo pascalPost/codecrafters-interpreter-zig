@@ -57,7 +57,10 @@ pub fn main() !void {
         return;
     }
 
-    const res = try eval.eval(allocator, parseRes.expr);
+    const res = eval.eval(allocator, parseRes.expr) catch {
+        std.process.exit(70);
+    };
+
     if (res) |val| {
         defer val.deinit(allocator);
         try std.io.getStdOut().writer().print("{}\n", .{val});
