@@ -7,7 +7,7 @@ const Unary = ast.Unary;
 const Operator = ast.Operator;
 const Binary = ast.Binary;
 
-pub const Error = error{ OperandNoNumber, OperandsNoNumbers } || std.mem.Allocator.Error || std.posix.WriteError;
+pub const Error = error{ OperandNotNumber, OperandsNotNumbers, OperandsNotTwoNumbersOrTwoStrings } || std.mem.Allocator.Error || std.posix.WriteError;
 
 const Tag = enum(u2) { bool, number, string };
 
@@ -94,7 +94,7 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
 
                     if (right == null or right.? != .number) {
                         try std.io.getStdErr().writer().print("[line {d}] Error: Operand must be a number.\n", .{u.operator.line});
-                        return error.OperandNoNumber;
+                        return error.OperandNotNumber;
                     }
                     return .{ .number = -(try eval(allocator, u.right)).?.number };
                 },
@@ -113,13 +113,13 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
                 .slash, .star, .minus => {
                     if (left == null or left.? != .number or right == null or right.? != .number) {
                         try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be numbers.\n", .{b.operator.line});
-                        return error.OperandNoNumber;
+                        return error.OperandsNotNumbers;
                     }
                 },
                 .plus => {
-                    if (left == null or right == null) {
-                        try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be numbers.\n", .{b.operator.line});
-                        return error.OperandNoNumber;
+                    if (left == null or right == null or (left.? == .string and right.? != .string) or (left.? == .number and right.? != .number)) {
+                        try std.io.getStdErr().writer().print("[line {d}] Error: Operands must be two numbers or two strings.\n", .{b.operator.line});
+                        return error.OperandsNotTwoNumbersOrTwoStrings;
                     }
                 },
                 else => {},
@@ -131,14 +131,11 @@ pub fn eval(allocator: std.mem.Allocator, expr: Expr) Error!?Result {
                 .minus => return .{ .number = left.?.number - right.?.number },
                 .plus => {
                     if (left.? == .string) {
-                        std.debug.assert(right.? == .string);
-
                         defer left.?.deinit(allocator);
                         defer right.?.deinit(allocator);
 
                         return .{ .string = .{ .value = try concat(allocator, left.?.string.value, right.?.string.value), .owning = true } };
                     }
-
                     return .{ .number = left.?.number + right.?.number };
                 },
                 .less => return .{ .bool = left.?.number < right.?.number },
