@@ -53,22 +53,13 @@ pub fn parse(allocator: std.mem.Allocator, tokens: *[]const scan.Token, errorWri
     return statements.toOwnedSlice();
 }
 
-test "print: generate output" {
-    const program =
-        \\ print "Hello, World!";
-    ;
-
-    const allocator = std.testing.allocator;
-
-    var errOut = std.ArrayList(u8).init(std.testing.allocator);
-    defer errOut.deinit();
-
-    const scanner = try scan.Scanner.init(allocator, program, errOut.writer());
+fn run(allocator: std.mem.Allocator, program: []const u8, outWriter: anytype, errWriter: anytype) !void {
+    const scanner = try scan.Scanner.init(allocator, program, errWriter);
     defer scanner.deinit();
 
     var tokens: []const scan.Token = scanner.tokens.items[0..];
 
-    const statements = try parse(allocator, &tokens, errOut.writer());
+    const statements = try parse(allocator, &tokens, errWriter);
     defer {
         for (statements) |stmt| {
             switch (stmt) {
@@ -78,14 +69,39 @@ test "print: generate output" {
         allocator.free(statements);
     }
 
-    // for(statements) |stmt| {
-    //     if(stmt == .print){
-    //         const res = try eval.eval(allocator, stmt.expr);
-    //         if(res)|r| {}
-    //     }
-    // }
+    for (statements) |stmt| {
+        switch (stmt) {
+            .print => |e| {
+                const res = eval.eval(allocator, e) catch {
+                    std.process.exit(70);
+                };
 
-    try std.testing.expect(statements.len > 0);
-    try std.testing.expect(statements[0] == .print);
-    try std.testing.expect(statements[0].print == .literal);
+                if (res) |val| {
+                    defer val.deinit(allocator);
+                    try outWriter.print("{}\n", .{val});
+                } else {
+                    try outWriter.writeAll("nil\n");
+                }
+            },
+            else => {},
+        }
+    }
+}
+
+test "print: generate output" {
+    const program =
+        \\ print "Hello, World!";
+    ;
+
+    const allocator = std.testing.allocator;
+
+    var stdOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer stdOut.deinit();
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    try run(allocator, program, stdOut.writer(), errOut.writer());
+    try std.testing.expect(errOut.items.len == 0);
+    try std.testing.expect(std.mem.eql(u8, "Hello, World!\n", stdOut.items[0..]));
 }
