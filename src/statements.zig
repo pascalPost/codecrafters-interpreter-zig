@@ -105,3 +105,22 @@ test "print: generate output" {
     try std.testing.expect(errOut.items.len == 0);
     try std.testing.expect(std.mem.eql(u8, "Hello, World!\n", stdOut.items[0..]));
 }
+
+test "print: multiple outputs" {
+    const program =
+    \\ print "Hello, World!";
+    \\ print 42;
+;
+
+    const allocator = std.testing.allocator;
+
+    var stdOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer stdOut.deinit();
+
+    var errOut = std.ArrayList(u8).init(std.testing.allocator);
+    defer errOut.deinit();
+
+    try run(allocator, program, stdOut.writer(), errOut.writer());
+    try std.testing.expect(errOut.items.len == 0);
+    try std.testing.expect(std.mem.eql(u8, "Hello, World!\n42\n", stdOut.items[0..]));
+}
