@@ -2,6 +2,7 @@ const std = @import("std");
 const scan = @import("scan.zig");
 const parser = @import("parse.zig");
 const eval = @import("eval.zig");
+const statements = @import("statements.zig");
 
 pub fn main() !void {
     const args = try std.process.argsAlloc(std.heap.page_allocator);
@@ -18,8 +19,9 @@ pub fn main() !void {
     const tokenize = std.mem.eql(u8, command, "tokenize");
     const parse = std.mem.eql(u8, command, "parse");
     const evaluate = std.mem.eql(u8, command, "evaluate");
+    const run = std.mem.eql(u8, command, "run");
 
-    if (!(tokenize or parse or evaluate)) {
+    if (!(tokenize or parse or evaluate or run)) {
         std.debug.print("Unknown command: {s}\n", .{command});
         std.process.exit(1);
     }
@@ -47,24 +49,65 @@ pub fn main() !void {
 
     if (tokenize) return;
 
-    const parseRes = parser.parse(allocator, scanner.tokens.items, std.io.getStdErr().writer()) catch {
-        std.process.exit(std.process.exit(65));
-    };
-    defer parseRes.expr.destroy(allocator);
-
     if (parse) {
+        const parseRes = parser.parse(allocator, scanner.tokens.items, std.io.getStdErr().writer()) catch {
+            std.process.exit(std.process.exit(65));
+        };
+        defer parseRes.expr.destroy(allocator);
+
         try std.io.getStdOut().writer().print("{}", .{parseRes.expr});
         return;
     }
 
-    const res = eval.eval(allocator, parseRes.expr) catch {
-        std.process.exit(70);
-    };
+    if (evaluate) {
+        const parseRes = parser.parse(allocator, scanner.tokens.items, std.io.getStdErr().writer()) catch {
+            std.process.exit(std.process.exit(65));
+        };
+        defer parseRes.expr.destroy(allocator);
 
-    if (res) |val| {
-        defer val.deinit(allocator);
-        try std.io.getStdOut().writer().print("{}\n", .{val});
-    } else {
-        try std.io.getStdOut().writer().writeAll("nil\n");
+        const res = eval.eval(allocator, parseRes.expr) catch {
+            std.process.exit(70);
+        };
+
+        if (res) |val| {
+            defer val.deinit(allocator);
+            try std.io.getStdOut().writer().print("{}\n", .{val});
+        } else {
+            try std.io.getStdOut().writer().writeAll("nil\n");
+        }
+    }
+
+    if (run) {
+        var tokens: []const scan.Token = scanner.tokens.items[0..];
+
+        const stmts = statements.parse(allocator, &tokens, std.io.getStdErr().writer()) catch {
+            std.process.exit(std.process.exit(65));
+        };
+        defer {
+            for (stmts) |stmt| {
+                switch (stmt) {
+                    .expr, .print => |e| e.destroy(allocator),
+                }
+            }
+            allocator.free(stmts);
+        }
+
+        for (stmts) |stmt| {
+            switch (stmt) {
+                .print => |e| {
+                    const res = eval.eval(allocator, e) catch {
+                        std.process.exit(70);
+                    };
+
+                    if (res) |val| {
+                        defer val.deinit(allocator);
+                        try std.io.getStdOut().writer().print("{}\n", .{val});
+                    } else {
+                        try std.io.getStdOut().writer().writeAll("nil\n");
+                    }
+                },
+                else => {},
+            }
+        }
     }
 }

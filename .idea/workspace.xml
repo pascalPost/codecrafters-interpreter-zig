@@ -3,182 +3,53 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="CMakeProjectFlavorService">
-    <option name="flavorId" value="CMakePlainProjectFlavor" />
-  </component>
   <component name="CMakeSettings">
     <configurations>
       <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="" />
+    <list default="true" id="e8d51f6d-6e80-4b98-9b8e-c369ea0639f0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/zigbrains.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/zigbrains.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.zig" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.zig" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ClangdSettings">
-    <option name="formatViaClangd" value="false" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Zig File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file:///usr/lib/zig/std/testing.zig" root0="FORCE_HIGHLIGHTING" />
-  </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 4
+  &quot;associatedIndex&quot;: 6
 }</component>
-  <component name="ProjectId" id="2lPcJ4CPakrptBtVenpJIyt75Vu" />
+  <component name="ProjectId" id="2m7kNTktG7vfirrnwbB0TEtADLB" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "Zig test.all tests in evaluate.zig.executor": "Run",
-    "Zig test.all tests in expressions.zig.executor": "Run",
-    "Zig test.all tests in test_eval.zig.executor": "Run",
-    "Zig test.all tests in test_parse.zig.executor": "Run",
-    "Zig test.all tests in test_scan.zig.executor": "Run",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/pascalp/workspace/codecrafters-interpreter-zig",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;Zig test.all tests in statements.zig.executor&quot;: &quot;Run&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/post/Workspace/codecrafters-interpreter-zig&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="Zig test.all tests in test_eval.zig">
-    <configuration name="all tests in evaluate.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
+}</component>
+  <component name="RunManager">
+    <configuration name="all tests in statements.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
       <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
       <ZigBrainsOption name="pty" value="false" />
-      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/evaluate.zig" />
-      <ZigBrainsNestedOption name="optimization">
-        <ZigBrainsOption name="level" value="Debug" />
-        <ZigBrainsOption name="forced" value="false" />
-      </ZigBrainsNestedOption>
-      <ZigBrainsOption name="colored" value="true" />
-      <ZigBrainsArrayOption name="compilerArgs" />
-      <method v="2" />
-    </configuration>
-    <configuration name="all tests in expressions.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
-      <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
-      <ZigBrainsOption name="pty" value="false" />
-      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/expressions.zig" />
-      <ZigBrainsNestedOption name="optimization">
-        <ZigBrainsOption name="level" value="Debug" />
-        <ZigBrainsOption name="forced" value="false" />
-      </ZigBrainsNestedOption>
-      <ZigBrainsOption name="colored" value="true" />
-      <ZigBrainsArrayOption name="compilerArgs" />
-      <method v="2" />
-    </configuration>
-    <configuration name="all tests in test_eval.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
-      <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
-      <ZigBrainsOption name="pty" value="false" />
-      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/test_eval.zig" />
-      <ZigBrainsNestedOption name="optimization">
-        <ZigBrainsOption name="level" value="Debug" />
-        <ZigBrainsOption name="forced" value="false" />
-      </ZigBrainsNestedOption>
-      <ZigBrainsOption name="colored" value="true" />
-      <ZigBrainsArrayOption name="compilerArgs" />
-      <method v="2" />
-    </configuration>
-    <configuration name="all tests in test_parse.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
-      <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
-      <ZigBrainsOption name="pty" value="false" />
-      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/test_parse.zig" />
-      <ZigBrainsNestedOption name="optimization">
-        <ZigBrainsOption name="level" value="Debug" />
-        <ZigBrainsOption name="forced" value="false" />
-      </ZigBrainsNestedOption>
-      <ZigBrainsOption name="colored" value="true" />
-      <ZigBrainsArrayOption name="compilerArgs" />
-      <method v="2" />
-    </configuration>
-    <configuration name="all tests in test_scan.zig" type="ZIGBRAINS_TEST" factoryName="ZIGBRAINS_TEST" temporary="true">
-      <ZigBrainsOption name="workingDirectory" value="$PROJECT_DIR$" />
-      <ZigBrainsOption name="pty" value="false" />
-      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/test_scan.zig" />
+      <ZigBrainsOption name="filePath" value="$PROJECT_DIR$/src/statements.zig" />
       <ZigBrainsNestedOption name="optimization">
         <ZigBrainsOption name="level" value="Debug" />
         <ZigBrainsOption name="forced" value="false" />
@@ -189,41 +60,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Zig test.all tests in test_eval.zig" />
-        <item itemvalue="Zig test.all tests in test_parse.zig" />
-        <item itemvalue="Zig test.all tests in test_scan.zig" />
-        <item itemvalue="Zig test.all tests in expressions.zig" />
-        <item itemvalue="Zig test.all tests in evaluate.zig" />
+        <item itemvalue="Zig test.all tests in statements.zig" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
-  <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="42595f78-b067-41c1-b275-9c1c5dc6f080" name="Changes" comment="" />
-      <created>1725085076461</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1725085076461</updated>
-      <workItem from="1725085077459" duration="4824000" />
-      <workItem from="1725091134870" duration="5360000" />
-      <workItem from="1725136065302" duration="3789000" />
-      <workItem from="1725201424305" duration="9647000" />
-      <workItem from="1725290640687" duration="1512000" />
-      <workItem from="1725292162566" duration="1402000" />
-      <workItem from="1725306163304" duration="5305000" />
-      <workItem from="1725374875521" duration="15524000" />
-      <workItem from="1725474998047" duration="24000" />
-      <workItem from="1725801883350" duration="13238000" />
-      <workItem from="1725903897314" duration="7179000" />
-    </task>
-    <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
-  </component>
 </project>
